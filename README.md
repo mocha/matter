@@ -1,4 +1,4 @@
-# Source for matter.party
+# 🎉 Welcome to the matter.party 🥳
 
 This is the source for [https://matter.party](https://matter.party), which is a community-built directory of matter devices of all kinds.
 
