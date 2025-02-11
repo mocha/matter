@@ -64,20 +64,36 @@ export interface DeviceData {
 }
 
 export async function getDevices(): Promise<DeviceData[]> {
+  const devices: DeviceData[] = []
+  
+  // Recursive function to process directories
+  const processDirectory = (dirPath: string) => {
+    const items = fs.readdirSync(dirPath)
+    
+    for (const item of items) {
+      const fullPath = path.join(dirPath, item)
+      const stat = fs.statSync(fullPath)
+      
+      if (stat.isDirectory()) {
+        // Recursively process subdirectories
+        processDirectory(fullPath)
+      } else if (item.endsWith('.md')) {
+        // Process markdown files
+        const fileContents = fs.readFileSync(fullPath, "utf8")
+        const { data, content } = matter(fileContents)
+        
+        devices.push({
+          ...data,
+          description: content,
+          slug: path.basename(item, '.md'),
+        } as DeviceData)
+      }
+    }
+  }
+
+  // Start processing from the devices directory
   const devicesDirectory = path.join(process.cwd(), "devices")
-  const filenames = fs.readdirSync(devicesDirectory)
-
-  const devices = filenames.map((filename) => {
-    const filePath = path.join(devicesDirectory, filename)
-    const fileContents = fs.readFileSync(filePath, "utf8")
-    const { data, content } = matter(fileContents)
-
-    return {
-      ...data,
-      description: content,
-      slug: filename.replace(".md", ""),
-    } as DeviceData
-  })
+  processDirectory(devicesDirectory)
 
   return devices
 }
