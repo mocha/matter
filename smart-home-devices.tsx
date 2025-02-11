@@ -35,9 +35,11 @@ export default function SmartHomeDevices({ devices: initialDevices }: SmartHomeD
     return devices.filter((device) => {
       const matchesSearch = Object.values(device).join(" ").toLowerCase().includes(searchQuery.toLowerCase())
 
-      const matchesCategory = selectedCategory === "All" || device.category === selectedCategory
+      const matchesCategory = selectedCategory === "All" || 
+        (device.category && device.category === selectedCategory)
 
-      const matchesConnection = selectedConnection === "All" || device.connectionType === selectedConnection
+      const matchesConnection = selectedConnection === "All" || 
+        (device.connectionType && device.connectionType === selectedConnection)
 
       const matchesStatus = selectedStatus === "All" || device.status === selectedStatus.toLowerCase()
 
@@ -211,6 +213,14 @@ export default function SmartHomeDevices({ devices: initialDevices }: SmartHomeD
                       >
                         {selectedDevice.status}
                       </span>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="font-medium mb-1">Released</div>
+                    <div>
+                      {selectedDevice.productData.releasedOn 
+                        ? new Date(selectedDevice.productData.releasedOn).toLocaleDateString()
+                        : "Release date unknown"}
                     </div>
                   </div>
                 </div>

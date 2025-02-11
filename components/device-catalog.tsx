@@ -152,17 +152,17 @@ export default function DeviceCatalog({ devices: initialDevices }: DeviceCatalog
                         {device.productData.inProduction ? "In Production" : "Discontinued"}
                       </span>
                     </td>
-                    <td className="p-4 align-middle">{device.featureData.supportedApps.join(", ")}</td>
-                    <td className="p-4 align-middle">{device.featureData.supportedConnections.join(", ")}</td>
+                    <td className="p-4 align-middle">{device.featureData?.supportedApps?.join(", ") || "None"}</td>
+                    <td className="p-4 align-middle">{device.featureData?.supportedConnections?.join(", ") || "None"}</td>
                     <td className="p-4 align-middle">
                       <span
                         className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                          device.featureData.directMatterConnection
+                          device.featureData?.directMatterConnection
                             ? "bg-green-100 text-green-700"
                             : "bg-red-100 text-red-700"
                         }`}
                       >
-                        {device.featureData.directMatterConnection ? "Yes" : "No"}
+                        {device.featureData?.directMatterConnection ? "Yes" : "No"}
                       </span>
                     </td>
                   </tr>
@@ -194,7 +194,11 @@ export default function DeviceCatalog({ devices: initialDevices }: DeviceCatalog
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <div className="font-medium mb-1">Released</div>
-                      <div>{new Date(selectedDevice.productData.releasedOn).toLocaleDateString()}</div>
+                      <div>
+                        {selectedDevice.productData.releasedOn 
+                          ? new Date(selectedDevice.productData.releasedOn).toLocaleDateString()
+                          : "Release date unknown"}
+                      </div>
                     </div>
                     <div>
                       <div className="font-medium mb-1">Status</div>
@@ -212,32 +216,36 @@ export default function DeviceCatalog({ devices: initialDevices }: DeviceCatalog
                     </div>
                     <div>
                       <div className="font-medium mb-1">Matter Version</div>
-                      <div>{selectedDevice.matterData["Specification Version"]}</div>
+                      <div>{selectedDevice.matterData?.["Specification Version"] || "Unknown"}</div>
                     </div>
                     <div>
                       <div className="font-medium mb-1">Firmware</div>
-                      <div>{selectedDevice.matterData["Firmware Version"]}</div>
+                      <div>{selectedDevice.matterData?.["Firmware Version"] || "Unknown"}</div>
                     </div>
                     <div>
                       <div className="font-medium mb-1">Certificate ID</div>
-                      <div>{selectedDevice.matterData["Certificate ID"]}</div>
+                      <div>{selectedDevice.matterData?.["Certificate ID"] || "Unknown"}</div>
                     </div>
                     <div>
                       <div className="font-medium mb-1">Certified Date</div>
-                      <div>{selectedDevice.matterData["Certified Date"]}</div>
+                      <div>{selectedDevice.matterData?.["Certified Date"] || "Unknown"}</div>
                     </div>
                   </div>
 
                   <Separator />
 
-                  <div>
-                    <div className="font-medium mb-2">Description</div>
-                    <div className="prose prose-sm dark:prose-invert">
-                      <Markdown>{selectedDevice.description}</Markdown>
-                    </div>
-                  </div>
+                  {selectedDevice.description && (
+                    <>
+                      <div>
+                        <div className="font-medium mb-2">Description</div>
+                        <div className="prose prose-sm dark:prose-invert">
+                          <Markdown>{selectedDevice.description}</Markdown>
+                        </div>
+                      </div>
+                    </>
+                  )}
 
-                  {selectedDevice.references && selectedDevice.references.length > 0 && (
+                  {selectedDevice.references?.length > 0 && (
                     <>
                       <Separator />
                       <div className="pb-6">

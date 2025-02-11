@@ -38,11 +38,28 @@ interface MatterData {
 }
 
 export interface DeviceData {
-  productData: ProductData
+  id: string;
+  name: string;
+  manufacturer: string;
+  description: string;
+  status: "online" | "offline";
+  lastSeen: string;
+  firmware?: string;
+  protocol?: string;
+  powerSource?: string;
+  category?: string;
+  connectionType?: string;
+  productData: {
+    make: string;
+    model: string;
+    description: string;
+    releasedOn?: string;
+    inProduction?: boolean;
+    variants?: ProductVariant[];
+  };
   featureData: FeatureData
   matterData: MatterData
   references: string[]
-  description: string
   slug: string
 }
 
