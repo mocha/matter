@@ -18,10 +18,10 @@ const DeviceSchema = z.object({
       sku: z.string().optional().nullable(),
       ean_or_upc: z.string().optional().nullable(),
       official_product_page_url: z.string().optional().nullable(),
-      page_last_checked: z.string().optional().nullable(),
+      page_last_checked: z.coerce.date().optional().nullable(),
       spec_sheet_url: z.string().optional().nullable(),
       msrp_ea: z.number().optional().nullable(),
-      price_last_checked: z.string().optional().nullable(),
+      price_last_checked: z.coerce.date().optional().nullable(),
     })),
   }).optional().nullable(),
   matter_info: z.object({
@@ -70,8 +70,9 @@ async function buildDeviceData() {
       return {
         id: path.basename(file, '.md'),
         ...result.data,
-        // content: markdown,
-        path: file
+        notes_content: markdown,
+        path: file,
+        gh_file_url: 'https://github.com/mocha/matter/' + file
       }
     } catch (error) {
       console.error(`Error processing file ${file}:`, error)

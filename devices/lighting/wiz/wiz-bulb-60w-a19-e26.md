@@ -35,6 +35,9 @@ device_info:
   white_color_temp_range_k_start: 2200
   white_color_temp_range_k_end: 6500
   color_rendering_index_cri: 80
+
+cool_new_shit: "thing"
+
 ---
 
 ## Notes
