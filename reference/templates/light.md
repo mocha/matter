@@ -15,6 +15,10 @@ product_info:
       spec_sheet_url:
       msrp_ea: 
       price_last_checked: 
+      variant_device_info: # any fields added here will override the device_info fields below
+        brightness_lm:
+        rated_power_w:
+        eqiv_power_w:
     - name:
       in_production: true
       sku:
@@ -44,9 +48,6 @@ device_info:
   white_color_temp_range_k_start: 
   white_color_temp_range_k_end: 
   color_rendering_index_cri: 
-  matter_certified: 
-  includes_direct_matter_code: 
-  app_required_for_full_functionality: 
 ---
 
 ## Notes

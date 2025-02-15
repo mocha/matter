@@ -8,21 +8,76 @@ This is the source for [https://matter.party](https://matter.party), which is a 
 
 All of our device entries live in the `/devices/` directory. In there, they're sorted by device type in to folders, but this is only for our convenience -- when the site is built, all of the files are pulled regardless of where they are in the directory tree.
 
+Templates for each device type are available in the `/reference/templates` directory. To add a new device, simply copy the right template over to the appropriate place in the `/devices` directory and fill in the relevant fields.
+
+### Device Entries
+
 Device entries are written in markdown, and use the YAML-flavored frontmatter syntax to store metadata about the device. All fields are optional, but the more information you can provide, the better. Any notes added in the body of the file will show up on the device's detail page, but won't be searchable.
 
-Templates for each device type are available in the `/reference/templates` directory. To add a new device, simply copy the right template over to somewhere sensible in the `/devices` directory, and fill in the required fields.
+A device entry (for a light) looks like this:
 
-Submit a PR with your new device, and we'll review it as soon as possible.
+```yaml
+
+general_info:
+  make: "Mattermaker"
+  model: "Wicked Awesome RGB Bulbs"
+  type: "light"
+
+product_info: 
+  variants: # At least one variant is required!
+    - name: "globe style"
+      in_production: true
+      sku: "123456"
+      ean_or_upc: "123456"
+      official_product_page_url: 
+      page_last_checked: 
+      spec_sheet_url:
+      msrp_ea: 
+      price_last_checked: 
+
+      ## variant-specific fields will override the device_info fields below
+      variant_device_info:
+        brightness_lm:
+        rated_power_w:
+        eqiv_power_w:
+
+    - name: "teardrop style" # Add as many variants as needed!
+      in_production: true
+      sku: "234567"
+      ean_or_upc: "234567"
+      ...
+      
+matter_info:
+  matter_certified: true
+  includes_direct_matter_code: true
+  app_required_for_full_functionality: true
+
+device_info: # Device-specific fields, shape of the data depends on the `type` in general_info
+  socket: 
+  bulb_shape: 
+  style: 
+  led_category: 
+  housing_material: 
+  bulb_lens_material: 
+  brightness_lm: 
+  rated_power_w: 
+  eqiv_power_w: 
+  beam_angle_deg: 
+  white_color_temp_range_k_start: 
+  white_color_temp_range_k_end: 
+  color_rendering_index_cri: 
+
+```
 
 ### Variants
 
-Many devices will come in multiple variants, such as different sizes, numbers in the package, colors, etc. matterparty assumes that variants are mostly the same thing but a different shape/size/color/etc for the sake of simplicity. If the variants are vastly different (???) then add multiple entries.
+Many devices will come in multiple variants, such as different sizes, numbers in the package, colors, etc. For the sake of the simplicity of the code, _all devices_ have a `variants` array, but there's nothing wrong with there only being one entry.
 
-Otherwise, note that the `product_info` frontmatter contains a `variants` array, which contains an object for each variant. The [template](/reference/templates/smart_bulb.md) has two entries so you can see how it works.
+To add more variants, add more named objects to the `variants` array. The [light.md template](/reference/templates/light.md) has two entries so you can see how it works.
 
 ### Links
 
-Where possible, provide a link to the canonical product page from the manufacturer. This should be in the `product_info[foo][official_product_page_url]` value. *Do not include affiliate links. Period.*
+Links are great! It'd be awesome to include links to the product page and spec sheets. *Do not include affiliate links. Period.*
 
 ---
 
@@ -30,9 +85,9 @@ Where possible, provide a link to the canonical product page from the manufactur
 
 Matter.party is simple -- there are only two pages.
 
-### The Device Index
+### The device grid
 
-The device index is a huge list of all of the devices in the database. It's formatted like a giant spreadsheet because it is one. 
+The device grid is a huge list of all of the devices in the database. It's formatted like a giant spreadsheet because it is one. 
 
 At the top of the table, each column has a header that if clicked will sort the column in ascending or descending order. The filter icon on each column lets you filter that column. If a filter is applied, an X will appear to the right of the filter icon, which allows you to quickly clear the filter.
 
@@ -49,7 +104,6 @@ Below that header we display whatever community notes that were added in the bod
 Each page also contains a link directly back to its source in Github to make contributions simpler -- if someone finds a problem, it's trivial for them to submit a correction.
 
 ---
-
 
 ## FAQ
 
