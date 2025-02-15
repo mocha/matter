@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
@@ -30,7 +29,7 @@ type Filters = {
 type TableState = {
   searchTerm: string
   sortConfig: SortConfig
-  filters: { [key: string]: string[] }
+  filters: Filters
   visibleColumns: string[]
 }
 
@@ -55,7 +54,7 @@ const loadTableState = (): TableState => {
     return {
       searchTerm: "",
       sortConfig: { key: "", direction: "asc" },
-      filters: {},
+      filters: {} as Filters,
       visibleColumns: DEFAULT_VISIBLE_COLUMNS,
     }
   }
@@ -64,10 +63,14 @@ const loadTableState = (): TableState => {
     const savedState = sessionStorage.getItem("tableState")
     if (savedState) {
       const state = JSON.parse(savedState)
-      // Convert filters back to Sets
+      // Convert arrays to Sets when loading
       return {
         ...state,
-        filters: Object.fromEntries(Object.entries(state.filters).map(([key, values]) => [key, new Set(values)])),
+        filters: Object.fromEntries(
+          Object.entries(state.filters).map(([key, values]) => 
+            [key, new Set(values as string[])]
+          )
+        ),
       }
     }
   } catch (error) {
@@ -77,7 +80,7 @@ const loadTableState = (): TableState => {
   return {
     searchTerm: "",
     sortConfig: { key: "", direction: "asc" },
-    filters: {},
+    filters: {} as Filters,
     visibleColumns: DEFAULT_VISIBLE_COLUMNS,
   }
 }
@@ -112,8 +115,8 @@ const getColorTempGradientStyle = (startK: number, endK: number) => {
 }
 
 export function DeviceGrid({ devices }: DeviceGridProps) {
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  // const router = useRouter()
+  // const searchParams = useSearchParams()
   const initialState = loadTableState()
 
   const [searchTerm, setSearchTerm] = useState(initialState.searchTerm)
@@ -126,7 +129,7 @@ export function DeviceGrid({ devices }: DeviceGridProps) {
     const state: TableState = {
       searchTerm,
       sortConfig,
-      filters: Object.fromEntries(Object.entries(filters).map(([key, values]) => [key, Array.from(values)])),
+      filters,  // Keep as Set<string>
       visibleColumns,
     }
     saveTableState(state)
@@ -136,17 +139,16 @@ export function DeviceGrid({ devices }: DeviceGridProps) {
   const filterOptions = useMemo(() => {
     return FILTERABLE_COLUMNS.reduce(
       (acc, { key, path }) => {
-        const values = new Set(devices.map(path))
+        const values = new Set(devices.map(d => String(path(d))))  // Convert all values to strings
         const sortedValues = Array.from(values).sort((a, b) => {
-          if (a === null) return 1
-          if (b === null) return -1
-          if (typeof a === "boolean" && typeof b === "boolean") return a === b ? 0 : a ? -1 : 1
-          return String(a).localeCompare(String(b))
+          if (a === "null") return 1
+          if (b === "null") return -1
+          return a.localeCompare(b)
         })
         acc[key] = sortedValues
         return acc
       },
-      {} as Record<string, (string | boolean | null)[]>,
+      {} as Record<string, string[]>,
     )
   }, [devices])
 
