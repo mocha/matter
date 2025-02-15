@@ -50,9 +50,9 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: compile device db
-        run: npx --no-install run prebuild
+        run: npm run prebuild
       - name: build
-        run: npx --no-install run build
+        run: npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
