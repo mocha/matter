@@ -92,7 +92,6 @@ export function ColumnsDropdown({ visibleColumns, onColumnToggle }: ColumnsDropd
               >
                 <span className="flex items-center">
                   {column.label}
-                  {visibleColumns.includes(column.key) && <Check className="ml-auto h-4 w-4" />}
                 </span>
               </DropdownMenuCheckboxItem>
             ))}

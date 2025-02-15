@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Github, ExternalLink, ArrowLeft } from "lucide-react"
+import { GithubIcon, ExternalLink, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
@@ -26,7 +26,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
         <Separator orientation="vertical" className="h-6" />
         <Button variant="outline" size="sm" asChild>
           <Link href={device.gh_file_url} className="flex items-center gap-2">
-            <Github className="h-4 w-4" />
+            <GithubIcon className="h-4 w-4" />
             Edit on GitHub
           </Link>
         </Button>
