@@ -5,13 +5,22 @@ last_updated_by: "@mocha"
 
 # Matter device ids and types
 
+In general, we're grouping all device types together by their top-level group (according to how it's structured in the [Matter 1.4 Device Library-Specification)(https://csa-iot.org/wp-content/uploads/2024/11/24-27351-005_Matter-1.4-Device-Library-Specification.pdf)]. If there are enough devices in a category to be broken out later, we can do so then.
+
+All of these folders have been prepopulated in the `/devices` directory.
+
 ## Lighting
+- Stored in the `/devices/lighting` directory
+- Referenced as `lighting` in device frontmatter
+
 | device_id | device_name |
 | ---       | ---         |
 | 0x0100    | On/Off Light |
 | 0x0101    | Dimmable Light |
 | 0x010C    | Color Temperature Light |
 | 0x010D    | Extended Color Light |
+
+---
 
 ## Smart plugs/outlets and other actuators
 | device_id | device_name |

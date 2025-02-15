@@ -2,7 +2,7 @@
 general_info:
   make: 
   model: 
-  type: "light"
+  type: "lighting"
 
 product_info: 
   variants:

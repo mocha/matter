@@ -20,6 +20,10 @@ Many devices will come in multiple variants, such as different sizes, numbers in
 
 Otherwise, note that the `product_info` frontmatter contains a `variants` array, which contains an object for each variant. The [template](/reference/templates/smart_bulb.md) has two entries so you can see how it works.
 
+### Links
+
+Where possible, provide a link to the canonical product page from the manufacturer. This should be in the `product_info[foo][official_product_page_url]` value. *Do not include affiliate links. Period.*
+
 ---
 
 ## Site Structure
@@ -54,3 +58,6 @@ Each page also contains a link directly back to its source in Github to make con
 
 2. I found a mistake! Something is wrong on the internet!
    - Great! Unlike the rest of the internet, this part is editable. Submit a PR with your correction and we'll happily take your changes.
+
+3. Does this site make money off of affiliate links or anything like that?
+   - No! The contribution guidelines ☝️ politely ask that you do not include them, and if it becomes a problem, we'll make removing them part of the build process.
