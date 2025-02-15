@@ -1,8 +1,14 @@
 import { notFound } from "next/navigation"
 import { DeviceDetails } from "@/components/devices/device-details"
 import { getDevice } from "@/lib/utils/get-devices"
+import { getAllDevices } from "@/lib/get-device-data"
 
-// export const dynamic = "force-dynamic"
+export async function generateStaticParams() {
+  const devices = getAllDevices()
+  return devices.map((device) => ({
+    id: device.id,
+  }))
+}
 
 export default async function DevicePage({
   params,

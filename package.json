@@ -13,7 +13,8 @@
     "prebuild": "tsx scripts/build-device-data.ts",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "static-build": "npm run prebuild && next build && npx serve out"
   },
   "repository": {
     "type": "git",
