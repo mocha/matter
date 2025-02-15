@@ -31,8 +31,22 @@ const DeviceSchema = z.object({
     model: z.string(),
     type: z.string()
   }),
-  product_info: z.object({
-    variants: z.array(z.object({
+  product_info: z.union([
+    z.object({
+      variants: z.array(z.object({
+        name: z.string().optional().nullable(),
+        in_production: z.boolean().optional().nullable(),
+        sku: z.string().optional().nullable(),
+        ean_or_upc: z.string().optional().nullable(),
+        official_product_page_url: z.string().optional().nullable(),
+        page_last_checked: z.coerce.date().optional().nullable(),
+        spec_sheet_url: z.string().optional().nullable(),
+        msrp_ea: z.number().optional().nullable(),
+        price_last_checked: z.coerce.date().optional().nullable(),
+        variant_device_info: VariantDeviceInfoSchema,
+      })),
+    }),
+    z.object({
       name: z.string().optional().nullable(),
       in_production: z.boolean().optional().nullable(),
       sku: z.string().optional().nullable(),
@@ -42,9 +56,8 @@ const DeviceSchema = z.object({
       spec_sheet_url: z.string().optional().nullable(),
       msrp_ea: z.number().optional().nullable(),
       price_last_checked: z.coerce.date().optional().nullable(),
-      variant_device_info: VariantDeviceInfoSchema,
-    })),
-  }).optional().nullable(),
+    })
+  ]),
   matter_info: z.object({
     matter_certified: z.boolean().optional().nullable(),
     includes_direct_matter_code: z.boolean().optional().nullable(),
@@ -68,40 +81,61 @@ async function buildDeviceData() {
         console.error(JSON.stringify(result.error.format(), null, 2))
         return []
       }
+
+      // If no variants exist, create a single device entry with the product info
+      if (!result.data.product_info?.variants) {
+        return [{
+          id: path.basename(file, '.md'),
+          general_info: result.data.general_info,
+          product_info: result.data.product_info || {},
+          matter_info: result.data.matter_info,
+          device_info: result.data.device_info,
+          notes_content: markdown,
+          path: file,
+          gh_file_url: `https://github.com/mocha/matter/${file}`
+        }]
+      }
       
       // Create a device entry for each variant
-      return result.data.product_info?.variants.map(variant => ({
-        id: `${path.basename(file, '.md')}${variant.name ? `-${variant.name.toLowerCase().replace(/\s+/g, '-')}` : ''}`,
-        general_info: {
-          ...result.data.general_info,
-          model: `${result.data.general_info.model}${variant.name ? ` ${variant.name}` : ''}`
-        },
-        product_info: variant, // Each device entry only gets its specific variant,
-        matter_info: result.data.matter_info,
-        device_info: {
-          ...result.data.device_info,
-          ...variant.variant_device_info // Override with variant-specific values
-        },
-        notes_content: markdown,
-        path: file,
-        gh_file_url: 'https://github.com/mocha/matter/' + file
-      })) || []
-
+      return result.data.product_info.variants.map(variant => {
+        const baseId = path.basename(file, '.md')
+        const variantId = variant.name ? `-${variant.name.toLowerCase().replace(/\s+/g, '-')}` : ''
+        
+        return {
+          id: `${baseId}${variantId}`,
+          general_info: {
+            ...result.data.general_info,
+            model: `${result.data.general_info.model}${variant.name ? ` ${variant.name}` : ''}`
+          },
+          product_info: {
+            name: variant.name,
+            in_production: variant.in_production,
+            sku: variant.sku,
+            ean_or_upc: variant.ean_or_upc,
+            official_product_page_url: variant.official_product_page_url,
+            page_last_checked: variant.page_last_checked,
+            spec_sheet_url: variant.spec_sheet_url,
+            msrp_ea: variant.msrp_ea,
+            price_last_checked: variant.price_last_checked
+          },
+          matter_info: result.data.matter_info,
+          device_info: {
+            ...result.data.device_info,
+            ...variant.variant_device_info
+          },
+          notes_content: markdown,
+          path: file,
+          gh_file_url: `https://github.com/mocha/matter/${file}`
+        }
+      })
     } catch (error) {
       console.error(`Error processing file ${file}:`, error)
       return []
-
     }
   }))
 
-  // Flatten and filter out null entries
   const validDevices = devices.flat().filter(Boolean)
-
-  await fs.writeFile(
-    './public/device-data.json',
-    JSON.stringify(validDevices, null, 2)
-  )
-
+  await fs.writeFile('./public/device-data.json', JSON.stringify(validDevices, null, 2))
   console.log(`Processed ${validDevices.length} valid devices from ${files.length} files`)
 }
 

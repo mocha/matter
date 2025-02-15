@@ -12,7 +12,10 @@ interface DeviceDetailsProps {
 }
 
 export function DeviceDetails({ device }: DeviceDetailsProps) {
-  const variant = device.product_info.variants[0]
+  // Handle both variants and direct product info
+  const productInfo = 'variants' in device.product_info 
+    ? device.product_info.variants[0]
+    : device.product_info
 
   return (
     <div className="space-y-6">
@@ -62,48 +65,48 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
           <dl className="grid gap-4">
             <div>
               <dt className="font-medium">Variant Name</dt>
-              <dd className="text-muted-foreground">{variant.name}</dd>
+              <dd className="text-muted-foreground">{productInfo.name}</dd>
             </div>
             <div>
               <dt className="font-medium">Production Status</dt>
               <dd>
-                {variant.in_production ? (
+                {productInfo.in_production ? (
                   <Badge variant="secondary">In Production</Badge>
                 ) : (
                   <Badge variant="destructive">Discontinued</Badge>
                 )}
               </dd>
             </div>
-            {variant.sku && (
+            {productInfo.sku && (
               <div>
                 <dt className="font-medium">SKU</dt>
-                <dd className="text-muted-foreground">{variant.sku}</dd>
+                <dd className="text-muted-foreground">{productInfo.sku}</dd>
               </div>
             )}
-            {variant.ean_or_upc && (
+            {productInfo.ean_or_upc && (
               <div>
                 <dt className="font-medium">EAN/UPC</dt>
-                <dd className="text-muted-foreground">{variant.ean_or_upc}</dd>
+                <dd className="text-muted-foreground">{productInfo.ean_or_upc}</dd>
               </div>
             )}
-            {variant.msrp_ea && (
+            {productInfo.msrp_ea && (
               <div>
                 <dt className="font-medium">MSRP</dt>
-                <dd className="text-muted-foreground">${variant.msrp_ea.toFixed(2)}</dd>
+                <dd className="text-muted-foreground">${productInfo.msrp_ea.toFixed(2)}</dd>
               </div>
             )}
-            {variant.price_last_checked && (
+            {productInfo.price_last_checked && (
               <div>
                 <dt className="font-medium">Price Last Checked</dt>
-                <dd className="text-muted-foreground">{new Date(variant.price_last_checked).toLocaleDateString()}</dd>
+                <dd className="text-muted-foreground">{new Date(productInfo.price_last_checked).toLocaleDateString()}</dd>
               </div>
             )}
-            {variant.official_product_page_url && (
+            {productInfo.official_product_page_url && (
               <div>
                 <dt className="font-medium">Product Page</dt>
                 <dd>
                   <Button variant="link" asChild className="h-auto p-0">
-                    <Link href={variant.official_product_page_url} target="_blank">
+                    <Link href={productInfo.official_product_page_url} target="_blank">
                       Visit manufacturer website
                       <ExternalLink className="ml-2 h-4 w-4" />
                     </Link>
@@ -111,12 +114,12 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
                 </dd>
               </div>
             )}
-            {variant.spec_sheet_url && (
+            {productInfo.spec_sheet_url && (
               <div>
                 <dt className="font-medium">Specification Sheet</dt>
                 <dd>
                   <Button variant="link" asChild className="h-auto p-0">
-                    <Link href={variant.spec_sheet_url} target="_blank">
+                    <Link href={productInfo.spec_sheet_url} target="_blank">
                       Download PDF
                       <ExternalLink className="ml-2 h-4 w-4" />
                     </Link>
