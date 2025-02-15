@@ -1,7 +1,7 @@
 ---
 general_info:
   make: "GE Lighting, a Savant company"
-  model: "GE Cync reveal® Smart LED Undercabinet Bar Light Fixture (12\")"
+  model: "Reveal® Smart LED Undercabinet Bar Light Fixture"
   type: "light"
 
 product_info:

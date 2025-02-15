@@ -4,20 +4,18 @@ export interface GeneralInfo {
   type: string
 }
 
-export interface ProductVariant {
-  name: string
-  in_production: boolean
-  sku: string | null
-  ean_or_upc: string | null
-  official_product_page_url: string | null
-  page_last_checked: string
-  spec_sheet_url: string | null
-  msrp_ea: number
-  price_last_checked: string
-}
-
-export interface ProductInfo {
-  variants: ProductVariant[]
+export type ProductInfo = {
+  name?: string | null
+  in_production?: boolean | null
+  sku?: string | null
+  ean_or_upc?: string | null
+  official_product_page_url?: string | null
+  page_last_checked?: Date | null
+  spec_sheet_url?: string | null
+  msrp_ea?: number | null
+  price_last_checked?: Date | null
+  variant_device_info?: DeviceInfo | null
+  variants?: ProductInfo[]
 }
 
 export interface MatterInfo {
@@ -42,12 +40,20 @@ export interface DeviceInfo {
   color_rendering_index_cri: number | null
 }
 
-export interface Device {
+export type Device = {
   id: string
-  general_info: GeneralInfo
+  general_info: {
+    make: string
+    model: string
+    type: string
+  }
   product_info: ProductInfo
-  matter_info: MatterInfo
-  device_info: DeviceInfo
+  matter_info?: {
+    matter_certified?: boolean | null
+    includes_direct_matter_code?: boolean | null
+    app_required_for_full_functionality?: boolean | null
+  } | null
+  device_info?: DeviceInfo | null
   notes_content: string
   path: string
   gh_file_url: string

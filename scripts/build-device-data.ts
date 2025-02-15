@@ -24,6 +24,19 @@ const DeviceInfoSchema = z.object({
 // Use the same schema for variants, but make it optional
 const VariantDeviceInfoSchema = DeviceInfoSchema.partial().optional().nullable()
 
+const ProductInfoSchema = z.object({
+  name: z.string().optional().nullable(),
+  in_production: z.boolean().optional().nullable(),
+  sku: z.string().optional().nullable(),
+  ean_or_upc: z.string().optional().nullable(),
+  official_product_page_url: z.string().optional().nullable(),
+  page_last_checked: z.coerce.date().optional().nullable(),
+  spec_sheet_url: z.string().optional().nullable(),
+  msrp_ea: z.number().optional().nullable(),
+  price_last_checked: z.coerce.date().optional().nullable(),
+  variant_device_info: VariantDeviceInfoSchema,
+})
+
 // Define schema for device data with optional fields
 const DeviceSchema = z.object({
   general_info: z.object({
@@ -32,31 +45,8 @@ const DeviceSchema = z.object({
     type: z.string()
   }),
   product_info: z.union([
-    z.object({
-      variants: z.array(z.object({
-        name: z.string().optional().nullable(),
-        in_production: z.boolean().optional().nullable(),
-        sku: z.string().optional().nullable(),
-        ean_or_upc: z.string().optional().nullable(),
-        official_product_page_url: z.string().optional().nullable(),
-        page_last_checked: z.coerce.date().optional().nullable(),
-        spec_sheet_url: z.string().optional().nullable(),
-        msrp_ea: z.number().optional().nullable(),
-        price_last_checked: z.coerce.date().optional().nullable(),
-        variant_device_info: VariantDeviceInfoSchema,
-      })),
-    }),
-    z.object({
-      name: z.string().optional().nullable(),
-      in_production: z.boolean().optional().nullable(),
-      sku: z.string().optional().nullable(),
-      ean_or_upc: z.string().optional().nullable(),
-      official_product_page_url: z.string().optional().nullable(),
-      page_last_checked: z.coerce.date().optional().nullable(),
-      spec_sheet_url: z.string().optional().nullable(),
-      msrp_ea: z.number().optional().nullable(),
-      price_last_checked: z.coerce.date().optional().nullable(),
-    })
+    z.object({ variants: z.array(ProductInfoSchema) }),
+    ProductInfoSchema
   ]),
   matter_info: z.object({
     matter_certified: z.boolean().optional().nullable(),
@@ -82,10 +72,12 @@ async function buildDeviceData() {
         return []
       }
 
-      // If no variants exist, create a single device entry with the product info
-      if (!result.data.product_info?.variants) {
+      const baseId = path.basename(file, '.md')
+
+      // If no variants exist, create a single device entry
+      if (!('variants' in result.data.product_info)) {
         return [{
-          id: path.basename(file, '.md'),
+          id: baseId,
           general_info: result.data.general_info,
           product_info: result.data.product_info || {},
           matter_info: result.data.matter_info,
@@ -96,27 +88,21 @@ async function buildDeviceData() {
         }]
       }
       
-      // Create a device entry for each variant
+      // For variants, create entries with the original base ID
       return result.data.product_info.variants.map(variant => {
-        const baseId = path.basename(file, '.md')
-        const variantId = variant.name ? `-${variant.name.toLowerCase().replace(/\s+/g, '-')}` : ''
+        // Only append variant name if it's not "Standard"
+        const variantId = variant.name && variant.name !== 'Standard' 
+          ? `-${variant.name.toLowerCase().replace(/\s+/g, '-')}` 
+          : ''
         
         return {
-          id: `${baseId}${variantId}`,
-          general_info: {
-            ...result.data.general_info,
-            model: `${result.data.general_info.model}${variant.name ? ` ${variant.name}` : ''}`
-          },
+          id: baseId + variantId,
+          general_info: result.data.general_info,
           product_info: {
-            name: variant.name,
-            in_production: variant.in_production,
-            sku: variant.sku,
-            ean_or_upc: variant.ean_or_upc,
-            official_product_page_url: variant.official_product_page_url,
-            page_last_checked: variant.page_last_checked,
-            spec_sheet_url: variant.spec_sheet_url,
-            msrp_ea: variant.msrp_ea,
-            price_last_checked: variant.price_last_checked
+            ...variant,
+            variant_device_info: undefined,
+            official_product_page_url: result.data.product_info.official_product_page_url,
+            page_last_checked: result.data.product_info.page_last_checked
           },
           matter_info: result.data.matter_info,
           device_info: {
@@ -135,7 +121,11 @@ async function buildDeviceData() {
   }))
 
   const validDevices = devices.flat().filter(Boolean)
+  
+  // Write to both locations to ensure consistency
   await fs.writeFile('./public/device-data.json', JSON.stringify(validDevices, null, 2))
+  await fs.writeFile('./lib/data/device-data.json', JSON.stringify(validDevices, null, 2))
+  
   console.log(`Processed ${validDevices.length} valid devices from ${files.length} files`)
 }
 

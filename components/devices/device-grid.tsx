@@ -40,12 +40,12 @@ const DEFAULT_VISIBLE_COLUMNS = ["model", "make", "led_category", "socket", "mat
 const FILTERABLE_COLUMNS = [
   { key: "make", path: (d: Device) => d.general_info.make },
   { key: "type", path: (d: Device) => d.general_info.type },
-  { key: "socket", path: (d: Device) => d.device_info.socket },
-  { key: "style", path: (d: Device) => d.device_info.style },
-  { key: "led_category", path: (d: Device) => d.device_info.led_category },
-  { key: "matter_certified", path: (d: Device) => d.matter_info.matter_certified },
-  { key: "direct_code", path: (d: Device) => d.matter_info.includes_direct_matter_code },
-  { key: "app_required", path: (d: Device) => d.matter_info.app_required_for_full_functionality },
+  { key: "socket", path: (d: Device) => d.device_info?.socket ?? null },
+  { key: "style", path: (d: Device) => d.device_info?.style ?? null },
+  { key: "led_category", path: (d: Device) => d.device_info?.led_category ?? null },
+  { key: "matter_certified", path: (d: Device) => d.matter_info?.matter_certified ?? null },
+  { key: "direct_code", path: (d: Device) => d.matter_info?.includes_direct_matter_code ?? null },
+  { key: "app_required", path: (d: Device) => d.matter_info?.app_required_for_full_functionality ?? null },
 ]
 
 // Load state from session storage
@@ -115,11 +115,52 @@ const getColorTempGradientStyle = (startK: number, endK: number) => {
 }
 
 export function DeviceGrid({ devices }: DeviceGridProps) {
-  // const router = useRouter()
-  // const searchParams = useSearchParams()
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedType, setSelectedType] = useState<string | null>(null)
+  const [selectedMake, setSelectedMake] = useState<string | null>(null)
+
+  const filteredDevices = devices.filter((device) => {
+    // Type filter
+    if (selectedType && device.general_info.type !== selectedType) {
+      return false
+    }
+
+    // Make filter
+    if (selectedMake && device.general_info.make !== selectedMake) {
+      return false
+    }
+
+    // Search filter
+    if (searchTerm) {
+      const searchFields = [
+        device.general_info.make,
+        device.general_info.model,
+        device.general_info.type,
+        device.device_info?.socket,
+        device.device_info?.bulb_shape,
+        device.device_info?.style,
+        device.device_info?.led_category,
+        device.product_info?.name,
+        device.product_info?.sku,
+        device.product_info?.ean_or_upc,
+      ]
+      const matchesSearch = searchFields.some((field) => 
+        field?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      if (!matchesSearch) {
+        return false
+      }
+    }
+
+    return true
+  })
+
+  // Get unique types and makes for filters
+  const types = Array.from(new Set(devices.map(d => d.general_info.type)))
+  const makes = Array.from(new Set(devices.map(d => d.general_info.make)))
+
   const initialState = loadTableState()
 
-  const [searchTerm, setSearchTerm] = useState(initialState.searchTerm)
   const [sortConfig, setSortConfig] = useState<SortConfig>(initialState.sortConfig)
   const [filters, setFilters] = useState<Filters>(initialState.filters)
   const [visibleColumns, setVisibleColumns] = useState<string[]>(initialState.visibleColumns)
@@ -151,30 +192,6 @@ export function DeviceGrid({ devices }: DeviceGridProps) {
       {} as Record<string, string[]>,
     )
   }, [devices])
-
-  const filteredDevices = devices.filter((device) => {
-    const searchFields = [
-      device.general_info.make,
-      device.general_info.model,
-      device.device_info.socket,
-      device.device_info.bulb_shape,
-      device.device_info.style,
-      device.device_info.led_category,
-      device.product_info.variants[0]?.sku,
-      device.product_info.variants[0]?.ean_or_upc,
-    ]
-    const matchesSearch = searchFields.some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()))
-
-    const matchesFilters = Object.entries(filters).every(([key, selectedValues]) => {
-      if (selectedValues.size === 0) return true
-      const column = FILTERABLE_COLUMNS.find((col) => col.key === key)
-      if (!column) return true
-      const value = String(column.path(device))
-      return selectedValues.has(value)
-    })
-
-    return matchesSearch && matchesFilters
-  })
 
   const sortedDevices = [...filteredDevices].sort((a, b) => {
     if (!sortConfig.key) return 0
@@ -306,8 +323,8 @@ export function DeviceGrid({ devices }: DeviceGridProps) {
                             <Badge variant={column.key === "matter_certified" ? "secondary" : "default"}>Yes</Badge>
                           ) : null
                         ) : column.key === "color_temp_range" &&
-                          device.device_info.white_color_temp_range_k_start &&
-                          device.device_info.white_color_temp_range_k_end ? (
+                          device.device_info?.white_color_temp_range_k_start &&
+                          device.device_info?.white_color_temp_range_k_end ? (
                           <span
                             style={getColorTempGradientStyle(
                               device.device_info.white_color_temp_range_k_start,

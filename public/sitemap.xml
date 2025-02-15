@@ -7,19 +7,19 @@
   </url>
   
   <url>
-    <loc>https://matter.party/devices/linkind-matter-smart-bulb-st19-standard</loc>
+    <loc>https://matter.party/devices/linkind-matter-smart-bulb-st19</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://matter.party/devices/wiz-filament-globe-clear-25w-st19-e26-standard</loc>
+    <loc>https://matter.party/devices/wiz-filament-globe-clear-25w-st19-e26</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://matter.party/devices/wiz-filament-bulb-clear-60w-st19-e26-standard</loc>
+    <loc>https://matter.party/devices/wiz-filament-bulb-clear-60w-st19-e26</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -31,31 +31,31 @@
   </url>
   
   <url>
-    <loc>https://matter.party/devices/moes-matter-smart-gu10-led-standard</loc>
+    <loc>https://matter.party/devices/moes-matter-smart-gu10-led</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://matter.party/devices/ge-direct-connect-smart-bulbs-tunable-white-standard</loc>
+    <loc>https://matter.party/devices/ge-direct-connect-smart-bulbs-tunable-white</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://matter.party/devices/ge-direct-connect-smart-bulbs-rgb-standard</loc>
+    <loc>https://matter.party/devices/ge-direct-connect-smart-bulbs-rgb</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://matter.party/devices/ge-cync-smart-globe-bulb-standard</loc>
+    <loc>https://matter.party/devices/ge-cync-smart-globe-bulb</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://matter.party/devices/ge-cync-smart-edison-style-bulb-standard</loc>
+    <loc>https://matter.party/devices/ge-cync-smart-edison-style-bulb</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -79,7 +79,7 @@
   </url>
   
   <url>
-    <loc>https://matter.party/devices/ge-cync-reveal-smart-led-recessed-downlights-standard</loc>
+    <loc>https://matter.party/devices/ge-cync-reveal-smart-led-recessed-downlights</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
