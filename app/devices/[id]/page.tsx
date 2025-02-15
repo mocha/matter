@@ -2,7 +2,7 @@ import { notFound } from "next/navigation"
 import { DeviceDetails } from "@/components/devices/device-details"
 import { getDevice } from "@/lib/utils/get-devices"
 
-export const dynamic = "force-dynamic"
+// export const dynamic = "force-dynamic"
 
 export default async function DevicePage({
   params,
