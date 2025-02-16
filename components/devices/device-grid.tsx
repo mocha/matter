@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo, useEffect, Suspense } from "react"
 import Link from "next/link"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
@@ -246,116 +246,117 @@ export function DeviceGrid({ devices }: DeviceGridProps) {
   const activeFilterCount = Object.values(filters).reduce((count, values) => count + (values.size > 0 ? 1 : 0), 0)
 
   return (
-    <div className="space-y-4">
-      {showBanner && (
-        <div className="bg-blue-500 text-white p-4 rounded-md">
-          <p className="mb-2">Matter.party (🥳🎊🎉) is a directory of Matter-compatible devices for you to browse at your leisure. The goal is to provide a comprehensive directory to help you find the right device for your next project. This is a work in progress and it'd be even better with your help! If you have some devices you can add, please do so on <a href="https://github.com/mocha/matter" target="_blank" rel="noopener noreferrer" className="underline">Github</a>!</p>
-          
-          <Button variant="" onClick={dismissBanner}>
-            Cool! Let's go!
-          </Button>
-        </div>
-      )}
-      <Tabs value={activeType} onValueChange={handleTypeChange as (value: string) => void}>
-        <TabsList>
-          <TabsTrigger value="light">Lights</TabsTrigger>
-          <TabsTrigger value="lock">Locks</TabsTrigger>
-        </TabsList>
-      </Tabs>
-      <div className="flex items-center gap-2 md:gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search devices..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-8"
-          />
-          {searchTerm && (
+    <Suspense fallback={<div>Loading...</div>}>
+      <div className="space-y-4">
+        {showBanner && (
+          <div className="bg-blue-500 text-white p-4 rounded-md">
+            <p className="mb-2">Matter.party (🥳🎊🎉) is a directory of Matter-compatible devices for you to browse at your leisure. The goal is to provide a comprehensive directory to help you find the right device for your next project. This is a work in progress and it'd be even better with your help! If you have some devices you can add, please do so on <a href="https://github.com/mocha/matter" target="_blank" rel="noopener noreferrer" className="underline">Github</a>!</p>
+            <Button variant="" onClick={dismissBanner}>
+              Cool! Let's go!
+            </Button>
+          </div>
+        )}
+        <Tabs value={activeType} onValueChange={handleTypeChange as (value: string) => void}>
+          <TabsList>
+            <TabsTrigger value="light">Lights</TabsTrigger>
+            <TabsTrigger value="lock">Locks</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <div className="flex items-center gap-2 md:gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search devices..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-8"
+            />
+            {searchTerm && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSearchTerm("")}
+                className="absolute right-0 top-0 h-full"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          {activeFilterCount > 0 && (
             <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setSearchTerm("")}
-              className="absolute right-0 top-0 h-full"
+              variant="outline"
+              onClick={() => setFilters({})}
+              className="bg-red-50 hover:bg-red-100 border-red-200 text-red-600 hover:text-red-700"
             >
-              <X className="h-4 w-4" />
+              Clear Filters ({activeFilterCount})
             </Button>
           )}
+          <ColumnsDropdown 
+            visibleColumns={visibleColumns} 
+            onColumnToggle={toggleColumn}
+            deviceType={activeType}
+          />
         </div>
-        {activeFilterCount > 0 && (
-          <Button
-            variant="outline"
-            onClick={() => setFilters({})}
-            className="bg-red-50 hover:bg-red-100 border-red-200 text-red-600 hover:text-red-700"
-          >
-            Clear Filters ({activeFilterCount})
-          </Button>
-        )}
-        <ColumnsDropdown 
-          visibleColumns={visibleColumns} 
-          onColumnToggle={toggleColumn}
-          deviceType={activeType}
-        />
-      </div>
-      <div className="rounded-md border w-full overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {sortedVisibleColumnConfigs.map((column) => (
-                  <TableHead key={column.key}>
-                    <div className="flex items-center gap-2">
-                      {filterOptions[column.key]?.length > 0 && (
-                        <FilterPopover
-                          column={column.key}
-                          label={column.label}
-                          options={filterOptions[column.key]}
-                          selectedValues={filters[column.key] || new Set()}
-                          onChange={(values) => handleFilterChange(column.key, values)}
-                        />
-                      )}
-                    </div>
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sortedDevices.length === 0 ? (
+        <div className="rounded-md border w-full overflow-hidden">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={visibleColumnConfigs.length} className="h-24 text-center">
-                    <div className="text-muted-foreground">No results found. Try removing some filters.</div>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                sortedDevices.map((device) => (
-                  <TableRow key={device.id}>
-                    {sortedVisibleColumnConfigs.map((column) => (
-                      <TableCell key={column.key}>
-                        {column.key === "model" ? (
-                          <Link href={`/devices/${device.id}`} className="hover:underline">
-                            {column.path(device)}
-                          </Link>
-                        ) : column.key === "matter_certified" ||
-                          column.key === "direct_code" ||
-                          column.key === "app_required" ? (
-                          column.path(device) ? (
-                            <Badge variant={column.key === "matter_certified" ? "secondary" : "default"}>Yes</Badge>
-                          ) : null
-                        ) : column.key === "color_temp_range" ? (
-                          colorTempSection(device, column)
-                        ) : (
-                          column.path(device)
+                  {sortedVisibleColumnConfigs.map((column) => (
+                    <TableHead key={column.key}>
+                      <div className="flex items-center gap-2">
+                        {filterOptions[column.key]?.length > 0 && (
+                          <FilterPopover
+                            column={column.key}
+                            label={column.label}
+                            options={filterOptions[column.key]}
+                            selectedValues={filters[column.key] || new Set()}
+                            onChange={(values) => handleFilterChange(column.key, values)}
+                          />
                         )}
-                      </TableCell>
-                    ))}
+                      </div>
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sortedDevices.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={visibleColumnConfigs.length} className="h-24 text-center">
+                      <div className="text-muted-foreground">No results found. Try removing some filters.</div>
+                    </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : (
+                  sortedDevices.map((device) => (
+                    <TableRow key={device.id}>
+                      {sortedVisibleColumnConfigs.map((column) => (
+                        <TableCell key={column.key}>
+                          {column.key === "model" ? (
+                            <Link href={`/devices/${device.id}`} className="hover:underline">
+                              {column.path(device)}
+                            </Link>
+                          ) : column.key === "matter_certified" ||
+                            column.key === "direct_code" ||
+                            column.key === "app_required" ? (
+                            column.path(device) ? (
+                              <Badge variant={column.key === "matter_certified" ? "secondary" : "default"}>Yes</Badge>
+                            ) : null
+                          ) : column.key === "color_temp_range" ? (
+                            colorTempSection(device, column)
+                          ) : (
+                            column.path(device)
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       </div>
-    </div>
+    </Suspense>
   )
 }
 

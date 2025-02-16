@@ -19,6 +19,12 @@
   </url>
   
   <url>
+    <loc>https://matter.party/devices/moes-matter-smart-gu10-led</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>https://matter.party/devices/wiz-filament-globe-clear-25w-st19-e26</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -32,12 +38,6 @@
   
   <url>
     <loc>https://matter.party/devices/wiz-bulb-60w-a19-e26-variant_name</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>https://matter.party/devices/moes-matter-smart-gu10-led</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
