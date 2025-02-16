@@ -11,68 +11,43 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import type { Device } from "@/lib/types/device"
-
-type ColumnConfig = {
-  key: string
-  label: string
-  group: "General" | "Device" | "Matter"
-  path: (device: Device) => any
-}
-
-const COLUMNS: ColumnConfig[] = [
-  { key: "make", label: "Make", group: "General", path: (d) => d.general_info.make },
-  { key: "model", label: "Model", group: "General", path: (d) => d.general_info.model },
-  { key: "type", label: "Type", group: "General", path: (d) => d.general_info.type },
-  { key: "socket", label: "Socket", group: "Device", path: (d) => d.device_info.socket },
-  { key: "bulb_shape", label: "Bulb Shape", group: "Device", path: (d) => d.device_info.bulb_shape },
-  { key: "style", label: "Style", group: "Device", path: (d) => d.device_info.style },
-  { key: "led_category", label: "LED Category", group: "Device", path: (d) => d.device_info.led_category },
-  { key: "brightness_lm", label: "Brightness (lm)", group: "Device", path: (d) => d.device_info.brightness_lm },
-  { key: "rated_power_w", label: "Rated Power (W)", group: "Device", path: (d) => d.device_info.rated_power_w },
-  { key: "eqiv_power_w", label: "Equivalent Power (W)", group: "Device", path: (d) => d.device_info.eqiv_power_w },
-  { key: "beam_angle_deg", label: "Beam Angle (°)", group: "Device", path: (d) => d.device_info.beam_angle_deg },
-  {
-    key: "color_temp_range",
-    label: "Color Temp Range",
-    group: "Device",
-    path: (d) =>
-      d.device_info.white_color_temp_range_k_start && d.device_info.white_color_temp_range_k_end
-        ? `${d.device_info.white_color_temp_range_k_start}K-${d.device_info.white_color_temp_range_k_end}K`
-        : null,
-  },
-  { key: "cri", label: "CRI", group: "Device", path: (d) => d.device_info.color_rendering_index_cri },
-  { key: "matter_certified", label: "Matter Certified", group: "Matter", path: (d) => d.matter_info.matter_certified },
-  { key: "direct_code", label: "Direct Code", group: "Matter", path: (d) => d.matter_info.includes_direct_matter_code },
-  {
-    key: "app_required",
-    label: "App Required",
-    group: "Matter",
-    path: (d) => d.matter_info.app_required_for_full_functionality,
-  },
-]
+import type { ColumnConfig } from "@/lib/types/columns"
+import { SHARED_COLUMNS } from "@/lib/types/columns"
+import { DEVICE_COLUMNS } from "@/lib/utils/device-utils"
 
 interface ColumnsDropdownProps {
   visibleColumns: string[]
   onColumnToggle: (column: string) => void
+  deviceType: 'light' | 'lock'
 }
 
-export function ColumnsDropdown({ visibleColumns, onColumnToggle }: ColumnsDropdownProps) {
-  const groups = React.useMemo(() => {
-    return COLUMNS.reduce(
-      (acc, column) => {
-        if (!acc[column.group]) {
-          acc[column.group] = []
-        }
-        acc[column.group].push(column)
-        return acc
-      },
-      {} as Record<string, typeof COLUMNS>,
-    )
+export function ColumnsDropdown({ visibleColumns, onColumnToggle, deviceType }: ColumnsDropdownProps) {
+  const [mounted, setMounted] = React.useState(false)
+  const [open, setOpen] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
   }, [])
 
+  const groups = React.useMemo(() => {
+    const deviceColumns = DEVICE_COLUMNS[deviceType]
+    return {
+      General: SHARED_COLUMNS.filter(c => c.group === "General"),
+      Device: deviceColumns,
+      Matter: SHARED_COLUMNS.filter(c => c.group === "Matter"),
+    }
+  }, [deviceType])
+
+  if (!mounted) {
+    return (
+      <Button variant="outline" className="ml-2">
+        Columns
+      </Button>
+    )
+  }
+
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="ml-2">
           Columns
@@ -88,7 +63,13 @@ export function ColumnsDropdown({ visibleColumns, onColumnToggle }: ColumnsDropd
               <DropdownMenuCheckboxItem
                 key={column.key}
                 checked={visibleColumns.includes(column.key)}
-                onCheckedChange={() => onColumnToggle(column.key)}
+                onCheckedChange={() => {
+                  onColumnToggle(column.key)
+                  setOpen(true)
+                }}
+                onSelect={(e) => {
+                  e.preventDefault()
+                }}
               >
                 <span className="flex items-center">
                   {column.label}
@@ -103,6 +84,10 @@ export function ColumnsDropdown({ visibleColumns, onColumnToggle }: ColumnsDropd
   )
 }
 
-export { COLUMNS }
-export type { ColumnConfig }
+export const getColumnsForType = (type: 'light' | 'lock'): ColumnConfig[] => {
+  return [
+    ...SHARED_COLUMNS,
+    ...DEVICE_COLUMNS[type]
+  ]
+}
 

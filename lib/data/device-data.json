@@ -15,7 +15,7 @@
       "msrp_ea": 6.49,
       "price_last_checked": "2025-02-14T00:00:00.000Z"
     },
-    "matter_info": {
+    "connectivity_info": {
       "matter_certified": null,
       "includes_direct_matter_code": null,
       "app_required_for_full_functionality": null
@@ -35,9 +35,45 @@
       "white_color_temp_range_k_end": 6500,
       "color_rendering_index_cri": null
     },
-    "notes_content": "\n## Notes ",
+    "notes_content": "",
     "path": "devices/lighting/linkind-matter-smart-bulb-st19.md",
-    "gh_file_url": "https://github.com/mocha/matter/devices/lighting/linkind-matter-smart-bulb-st19.md"
+    "gh_file_url": "https://github.com/mocha/matter/blob/main/devices/lighting/linkind-matter-smart-bulb-st19.md?plain=1"
+  },
+  {
+    "id": "u100-smart-deadbolt",
+    "general_info": {
+      "make": "Aqara",
+      "model": "U100 Smart Deadbolt",
+      "type": "lock"
+    },
+    "product_info": {
+      "name": null,
+      "in_production": true,
+      "sku": null,
+      "ean_or_upc": null,
+      "spec_sheet_url": null,
+      "msrp_ea": null,
+      "price_last_checked": null
+    },
+    "connectivity_info": {
+      "matter_certified": true,
+      "includes_direct_matter_code": true,
+      "app_required_for_full_functionality": true
+    },
+    "device_info": {
+      "unlock_with_pin": true,
+      "unlock_with_rfid": true,
+      "unlock_with_fingerprint": true,
+      "unlock_with_facial_recognition": false,
+      "unlock_with_proprietary": false,
+      "bluetooth": true,
+      "wifi": true,
+      "battery": true,
+      "battery_type": "4x AA"
+    },
+    "notes_content": "\n## Notes\n",
+    "path": "devices/locks/aqara/u100-smart-deadbolt.md",
+    "gh_file_url": "https://github.com/mocha/matter/blob/main/devices/locks/aqara/u100-smart-deadbolt.md?plain=1"
   },
   {
     "id": "wiz-filament-globe-clear-25w-st19-e26",
@@ -55,7 +91,7 @@
       "msrp_ea": 29.99,
       "price_last_checked": "2025-02-14T00:00:00.000Z"
     },
-    "matter_info": {
+    "connectivity_info": {
       "matter_certified": true,
       "includes_direct_matter_code": true,
       "app_required_for_full_functionality": false
@@ -75,9 +111,9 @@
       "white_color_temp_range_k_end": 2100,
       "color_rendering_index_cri": 80
     },
-    "notes_content": "\n## Notes \n\n- *Color temperature warning* -- it's easy to miss that the color temp range is 1800-2100k. This is an _extremely_ warm bulb and makes this one only suitable for color-only applications.\n",
+    "notes_content": "\n- *Color temperature warning* -- it's easy to miss that the color temp range is 1800-2100k. This is an _extremely_ warm bulb and makes this one only suitable for color-only applications.\n",
     "path": "devices/lighting/wiz/wiz-filament-globe-clear-25w-st19-e26.md",
-    "gh_file_url": "https://github.com/mocha/matter/devices/lighting/wiz/wiz-filament-globe-clear-25w-st19-e26.md"
+    "gh_file_url": "https://github.com/mocha/matter/blob/main/devices/lighting/wiz/wiz-filament-globe-clear-25w-st19-e26.md?plain=1"
   },
   {
     "id": "wiz-filament-bulb-clear-60w-st19-e26",
@@ -95,7 +131,7 @@
       "msrp_ea": 13.99,
       "price_last_checked": "2025-02-14T00:00:00.000Z"
     },
-    "matter_info": {
+    "connectivity_info": {
       "matter_certified": true,
       "includes_direct_matter_code": true,
       "app_required_for_full_functionality": false
@@ -115,9 +151,9 @@
       "white_color_temp_range_k_end": 5000,
       "color_rendering_index_cri": 90
     },
-    "notes_content": "\n## Notes ",
+    "notes_content": "",
     "path": "devices/lighting/wiz/wiz-filament-bulb-clear-60w-st19-e26.md",
-    "gh_file_url": "https://github.com/mocha/matter/devices/lighting/wiz/wiz-filament-bulb-clear-60w-st19-e26.md"
+    "gh_file_url": "https://github.com/mocha/matter/blob/main/devices/lighting/wiz/wiz-filament-bulb-clear-60w-st19-e26.md?plain=1"
   },
   {
     "id": "wiz-bulb-60w-a19-e26-variant_name",
@@ -135,7 +171,7 @@
       "msrp_ea": 10.99,
       "price_last_checked": "2025-02-14T00:00:00.000Z"
     },
-    "matter_info": {
+    "connectivity_info": {
       "matter_certified": true,
       "includes_direct_matter_code": false,
       "app_required_for_full_functionality": true
@@ -155,9 +191,9 @@
       "white_color_temp_range_k_end": 6500,
       "color_rendering_index_cri": 80
     },
-    "notes_content": "\n## Notes",
+    "notes_content": "",
     "path": "devices/lighting/wiz/wiz-bulb-60w-a19-e26.md",
-    "gh_file_url": "https://github.com/mocha/matter/devices/lighting/wiz/wiz-bulb-60w-a19-e26.md"
+    "gh_file_url": "https://github.com/mocha/matter/blob/main/devices/lighting/wiz/wiz-bulb-60w-a19-e26.md?plain=1"
   },
   {
     "id": "moes-matter-smart-gu10-led",
@@ -175,7 +211,7 @@
       "msrp_ea": 12.99,
       "price_last_checked": "2025-02-14T00:00:00.000Z"
     },
-    "matter_info": {
+    "connectivity_info": {
       "matter_certified": true,
       "includes_direct_matter_code": true,
       "app_required_for_full_functionality": false
@@ -195,9 +231,9 @@
       "white_color_temp_range_k_end": 6500,
       "color_rendering_index_cri": null
     },
-    "notes_content": "\n## Notes ",
+    "notes_content": "",
     "path": "devices/lighting/moes/moes-matter-smart-gu10-led.md",
-    "gh_file_url": "https://github.com/mocha/matter/devices/lighting/moes/moes-matter-smart-gu10-led.md"
+    "gh_file_url": "https://github.com/mocha/matter/blob/main/devices/lighting/moes/moes-matter-smart-gu10-led.md?plain=1"
   },
   {
     "id": "ge-direct-connect-smart-bulbs-tunable-white",
@@ -215,7 +251,7 @@
       "msrp_ea": 11.48,
       "price_last_checked": "2025-02-14T00:00:00.000Z"
     },
-    "matter_info": {
+    "connectivity_info": {
       "matter_certified": true,
       "includes_direct_matter_code": null,
       "app_required_for_full_functionality": null
@@ -235,9 +271,9 @@
       "white_color_temp_range_k_end": 7000,
       "color_rendering_index_cri": 90
     },
-    "notes_content": "\n## Notes ",
+    "notes_content": "",
     "path": "devices/lighting/ge-cync/ge-direct-connect-smart-bulbs-tunable-white.md",
-    "gh_file_url": "https://github.com/mocha/matter/devices/lighting/ge-cync/ge-direct-connect-smart-bulbs-tunable-white.md"
+    "gh_file_url": "https://github.com/mocha/matter/blob/main/devices/lighting/ge-cync/ge-direct-connect-smart-bulbs-tunable-white.md?plain=1"
   },
   {
     "id": "ge-direct-connect-smart-bulbs-rgb",
@@ -255,7 +291,7 @@
       "msrp_ea": 11.25,
       "price_last_checked": "2025-02-14T00:00:00.000Z"
     },
-    "matter_info": {
+    "connectivity_info": {
       "matter_certified": true,
       "includes_direct_matter_code": true,
       "app_required_for_full_functionality": false
@@ -275,9 +311,9 @@
       "white_color_temp_range_k_end": null,
       "color_rendering_index_cri": 90
     },
-    "notes_content": "\n## Notes ",
+    "notes_content": "",
     "path": "devices/lighting/ge-cync/ge-direct-connect-smart-bulbs-rgb.md",
-    "gh_file_url": "https://github.com/mocha/matter/devices/lighting/ge-cync/ge-direct-connect-smart-bulbs-rgb.md"
+    "gh_file_url": "https://github.com/mocha/matter/blob/main/devices/lighting/ge-cync/ge-direct-connect-smart-bulbs-rgb.md?plain=1"
   },
   {
     "id": "ge-cync-smart-globe-bulb",
@@ -295,7 +331,7 @@
       "msrp_ea": 23.49,
       "price_last_checked": "2025-02-14T00:00:00.000Z"
     },
-    "matter_info": {
+    "connectivity_info": {
       "matter_certified": true,
       "includes_direct_matter_code": false,
       "app_required_for_full_functionality": true
@@ -315,9 +351,9 @@
       "white_color_temp_range_k_end": null,
       "color_rendering_index_cri": 90
     },
-    "notes_content": "\n## Notes ",
+    "notes_content": "",
     "path": "devices/lighting/ge-cync/ge-cync-smart-globe-bulb.md",
-    "gh_file_url": "https://github.com/mocha/matter/devices/lighting/ge-cync/ge-cync-smart-globe-bulb.md"
+    "gh_file_url": "https://github.com/mocha/matter/blob/main/devices/lighting/ge-cync/ge-cync-smart-globe-bulb.md?plain=1"
   },
   {
     "id": "ge-cync-smart-edison-style-bulb",
@@ -335,7 +371,7 @@
       "msrp_ea": 22.49,
       "price_last_checked": "2025-02-14T00:00:00.000Z"
     },
-    "matter_info": {
+    "connectivity_info": {
       "matter_certified": true,
       "includes_direct_matter_code": false,
       "app_required_for_full_functionality": true
@@ -355,9 +391,9 @@
       "white_color_temp_range_k_end": null,
       "color_rendering_index_cri": 90
     },
-    "notes_content": "\n## Notes ",
+    "notes_content": "",
     "path": "devices/lighting/ge-cync/ge-cync-smart-edison-style-bulb.md",
-    "gh_file_url": "https://github.com/mocha/matter/devices/lighting/ge-cync/ge-cync-smart-edison-style-bulb.md"
+    "gh_file_url": "https://github.com/mocha/matter/blob/main/devices/lighting/ge-cync/ge-cync-smart-edison-style-bulb.md?plain=1"
   },
   {
     "id": "ge-cync-reveal-undercabinet-12in-12in",
@@ -375,7 +411,7 @@
       "msrp_ea": 59.99,
       "price_last_checked": "2025-02-14T00:00:00.000Z"
     },
-    "matter_info": {
+    "connectivity_info": {
       "matter_certified": true,
       "includes_direct_matter_code": true,
       "app_required_for_full_functionality": false
@@ -394,9 +430,9 @@
       "brightness_lm": 750,
       "rated_power_w": 13
     },
-    "notes_content": "\n## Notes ",
+    "notes_content": "",
     "path": "devices/lighting/ge-cync/ge-cync-reveal-undercabinet-12in.md",
-    "gh_file_url": "https://github.com/mocha/matter/devices/lighting/ge-cync/ge-cync-reveal-undercabinet-12in.md"
+    "gh_file_url": "https://github.com/mocha/matter/blob/main/devices/lighting/ge-cync/ge-cync-reveal-undercabinet-12in.md?plain=1"
   },
   {
     "id": "ge-cync-reveal-undercabinet-12in-18in",
@@ -413,7 +449,7 @@
       "msrp_ea": 64.99,
       "price_last_checked": "2025-02-14T00:00:00.000Z"
     },
-    "matter_info": {
+    "connectivity_info": {
       "matter_certified": true,
       "includes_direct_matter_code": true,
       "app_required_for_full_functionality": false
@@ -432,9 +468,9 @@
       "brightness_lm": 1150,
       "rated_power_w": 19
     },
-    "notes_content": "\n## Notes ",
+    "notes_content": "",
     "path": "devices/lighting/ge-cync/ge-cync-reveal-undercabinet-12in.md",
-    "gh_file_url": "https://github.com/mocha/matter/devices/lighting/ge-cync/ge-cync-reveal-undercabinet-12in.md"
+    "gh_file_url": "https://github.com/mocha/matter/blob/main/devices/lighting/ge-cync/ge-cync-reveal-undercabinet-12in.md?plain=1"
   },
   {
     "id": "ge-cync-reveal-undercabinet-12in-24in",
@@ -451,7 +487,7 @@
       "msrp_ea": 69.99,
       "price_last_checked": "2025-02-14T00:00:00.000Z"
     },
-    "matter_info": {
+    "connectivity_info": {
       "matter_certified": true,
       "includes_direct_matter_code": true,
       "app_required_for_full_functionality": false
@@ -470,9 +506,9 @@
       "brightness_lm": 1500,
       "rated_power_w": 24
     },
-    "notes_content": "\n## Notes ",
+    "notes_content": "",
     "path": "devices/lighting/ge-cync/ge-cync-reveal-undercabinet-12in.md",
-    "gh_file_url": "https://github.com/mocha/matter/devices/lighting/ge-cync/ge-cync-reveal-undercabinet-12in.md"
+    "gh_file_url": "https://github.com/mocha/matter/blob/main/devices/lighting/ge-cync/ge-cync-reveal-undercabinet-12in.md?plain=1"
   },
   {
     "id": "ge-cync-reveal-smart-led-recessed-downlights",
@@ -490,7 +526,7 @@
       "msrp_ea": 19.45,
       "price_last_checked": "2025-02-14T00:00:00.000Z"
     },
-    "matter_info": {
+    "connectivity_info": {
       "matter_certified": true,
       "includes_direct_matter_code": true,
       "app_required_for_full_functionality": false
@@ -510,8 +546,8 @@
       "white_color_temp_range_k_end": 7000,
       "color_rendering_index_cri": null
     },
-    "notes_content": "\n## Notes ",
+    "notes_content": "",
     "path": "devices/lighting/ge-cync/ge-cync-reveal-smart-led-recessed-downlights.md",
-    "gh_file_url": "https://github.com/mocha/matter/devices/lighting/ge-cync/ge-cync-reveal-smart-led-recessed-downlights.md"
+    "gh_file_url": "https://github.com/mocha/matter/blob/main/devices/lighting/ge-cync/ge-cync-reveal-smart-led-recessed-downlights.md?plain=1"
   }
 ]

@@ -47,7 +47,7 @@ product_info:
       ean_or_upc: "234567"
       ...
       
-matter_info:
+connectivity_info:
   matter_certified: true
   includes_direct_matter_code: true
   app_required_for_full_functionality: true

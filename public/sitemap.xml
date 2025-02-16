@@ -13,6 +13,12 @@
   </url>
   
   <url>
+    <loc>https://matter.party/devices/u100-smart-deadbolt</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>https://matter.party/devices/wiz-filament-globe-clear-25w-st19-e26</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

@@ -102,3 +102,18 @@ body {
   padding: 10px; /* Optional padding */
 }
 
+@layer components {
+  .device-details dt {
+    @apply float-left clear-left w-40 font-medium;
+  }
+  
+  .device-details dd {
+    @apply ml-44 pb-4;  /* 40px width + 16px gap */
+  }
+
+  /* Clear the float every new item */
+  .device-details div {
+    @apply clear-both;
+  }
+}
+

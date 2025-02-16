@@ -16,7 +16,7 @@ product_info:
       msrp_ea: 19.45
       price_last_checked: "2025-02-14"
 
-matter_info:
+connectivity_info:
   matter_certified: true
   includes_direct_matter_code: true
   app_required_for_full_functionality: false
@@ -36,5 +36,3 @@ device_info:
   white_color_temp_range_k_end: 7000
   color_rendering_index_cri: null
 ---
-
-## Notes 

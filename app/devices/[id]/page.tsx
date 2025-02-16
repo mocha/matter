@@ -50,14 +50,9 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
       device.general_info.type,
       'smart home',
       'specifications',
-    ]
-  }
-
-  if (device.device_info?.socket) {
-    metadata.keywords?.push(device.device_info.socket)
-  }
-  if (device.device_info?.led_category) {
-    metadata.keywords?.push(device.device_info.led_category)
+      device.device_info?.socket,
+      device.device_info?.led_category,
+    ].filter(Boolean) as string[]  // Filter out nullish values
   }
 
   return metadata

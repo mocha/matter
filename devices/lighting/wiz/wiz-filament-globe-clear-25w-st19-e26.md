@@ -16,7 +16,7 @@ product_info:
       msrp_ea: 29.99
       price_last_checked: "2025-02-14"
 
-matter_info:
+connectivity_info:
   matter_certified: true
   includes_direct_matter_code: true
   app_required_for_full_functionality: false
@@ -36,7 +36,5 @@ device_info:
   white_color_temp_range_k_end: 2100
   color_rendering_index_cri: 80
 ---
-
-## Notes 
 
 - *Color temperature warning* -- it's easy to miss that the color temp range is 1800-2100k. This is an _extremely_ warm bulb and makes this one only suitable for color-only applications.

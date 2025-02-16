@@ -6,22 +6,160 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import Markdown from "react-markdown"
 import type { Device } from "@/lib/types/device"
+import { isLightDevice, isLockDevice } from "@/lib/utils/type-guards"
+import { LightDeviceDetails } from "./light-device-details"
+import { LockDeviceDetails } from "./lock-device-details"
+import { useSearchParams } from 'next/navigation'
 
 interface DeviceDetailsProps {
   device: Device
 }
 
+// Shared info sections that apply to all devices
+function GeneralInfo({ device }: DeviceDetailsProps) {
+  return (
+    <dl className="device-details">
+      <div>
+        <dt className="font-medium">Make</dt>
+        <dd className="text-muted-foreground">{device.general_info.make}</dd>
+      </div>
+      <div>
+        <dt className="font-medium">Model</dt>
+        <dd className="text-muted-foreground">{device.general_info.model}</dd>
+      </div>
+      <div>
+        <dt className="font-medium">Type</dt>
+        <dd className="text-muted-foreground">{device.general_info.type}</dd>
+      </div>
+    </dl>
+  )
+}
+
+function ProductInfo({ device }: DeviceDetailsProps) {
+  return (
+    <dl className="device-details">
+      {device.product_info.name && (
+        <div>
+          <dt className="font-medium">Name</dt>
+          <dd className="text-muted-foreground">{device.product_info.name}</dd>
+        </div>
+      )}
+      <div>
+        <dt className="font-medium">Production Status</dt>
+        <dd>
+          {device.product_info.in_production ? (
+            <Badge variant="secondary">In Production</Badge>
+          ) : (
+            <Badge variant="destructive">Discontinued</Badge>
+          )}
+        </dd>
+      </div>
+      {device.product_info.sku && (
+        <div>
+          <dt className="font-medium">SKU</dt>
+          <dd className="text-muted-foreground">{device.product_info.sku}</dd>
+        </div>
+      )}
+      {device.product_info.ean_or_upc && (
+        <div>
+          <dt className="font-medium">EAN/UPC</dt>
+          <dd className="text-muted-foreground">{device.product_info.ean_or_upc}</dd>
+        </div>
+      )}
+      {device.product_info.msrp_ea && (
+        <div>
+          <dt className="font-medium">MSRP</dt>
+          <dd className="text-muted-foreground">${device.product_info.msrp_ea.toFixed(2)}</dd>
+        </div>
+      )}
+      {device.product_info.price_last_checked && (
+        <div>
+          <dt className="font-medium">Price Last Checked</dt>
+          <dd className="text-muted-foreground">{new Date(device.product_info.price_last_checked).toLocaleDateString()}</dd>
+        </div>
+      )}
+      {device.product_info.official_product_page_url && (
+        <div>
+          <dt className="font-medium">Product Page</dt>
+          <dd>
+            <Button variant="link" asChild className="h-auto p-0">
+              <Link href={device.product_info.official_product_page_url} target="_blank">
+                Visit manufacturer website
+                <ExternalLink className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </dd>
+        </div>
+      )}
+      {device.product_info.spec_sheet_url && (
+        <div>
+          <dt className="font-medium">Specification Sheet</dt>
+          <dd>
+            <Button variant="link" asChild className="h-auto p-0">
+              <Link href={device.product_info.spec_sheet_url} target="_blank">
+                Download PDF
+                <ExternalLink className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </dd>
+        </div>
+      )}
+    </dl>
+  )
+}
+
+function MatterInfo({ device }: DeviceDetailsProps) {
+  return (
+    <dl className="device-details">
+      <div>
+        <dt className="font-medium">Matter Certified</dt>
+        <dd>
+          {device.connectivity_info?.matter_certified ? (
+            <Badge variant="secondary">Yes</Badge>
+          ) : device.connectivity_info?.matter_certified === false ? (
+            <Badge variant="outline">No</Badge>
+          ) : (
+            <span className="text-muted-foreground">Not specified</span>
+          )}
+        </dd>
+      </div>
+      <div>
+        <dt className="font-medium">Direct Matter Code</dt>
+        <dd>
+          {device.connectivity_info?.includes_direct_matter_code ? (
+            <Badge>Yes</Badge>
+          ) : device.connectivity_info?.includes_direct_matter_code === false ? (
+            <Badge variant="outline">No</Badge>
+          ) : (
+            <span className="text-muted-foreground">Not specified</span>
+          )}
+        </dd>
+      </div>
+      <div>
+        <dt className="font-medium">App Required</dt>
+        <dd>
+          {device.connectivity_info?.app_required_for_full_functionality ? (
+            <Badge variant="destructive">Yes</Badge>
+          ) : device.connectivity_info?.app_required_for_full_functionality === false ? (
+            <Badge variant="outline">No</Badge>
+          ) : (
+            <span className="text-muted-foreground">Not specified</span>
+          )}
+        </dd>
+      </div>
+    </dl>
+  )
+}
+
 export function DeviceDetails({ device }: DeviceDetailsProps) {
-  // Handle both variants and direct product info
-  const productInfo = 'variants' in device.product_info 
-    ? device.product_info.variants[0]
-    : device.product_info
+  // Get the device type to use as the default tab when returning
+  const deviceType = device.general_info.type
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" asChild>
-          <Link href="/" className="flex items-center gap-2">
+          <Link href={`/?type=${deviceType}`} className="flex items-center gap-2">
             <ArrowLeft className="h-4 w-4" />
             Back to devices
           </Link>
@@ -40,20 +178,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
           <h2 className="text-lg font-semibold">General Information</h2>
         </CardHeader>
         <CardContent>
-          <dl className="grid gap-4">
-            <div>
-              <dt className="font-medium">Make</dt>
-              <dd className="text-muted-foreground">{device.general_info.make}</dd>
-            </div>
-            <div>
-              <dt className="font-medium">Model</dt>
-              <dd className="text-muted-foreground">{device.general_info.model}</dd>
-            </div>
-            <div>
-              <dt className="font-medium">Type</dt>
-              <dd className="text-muted-foreground">{device.general_info.type}</dd>
-            </div>
-          </dl>
+          <GeneralInfo device={device} />
         </CardContent>
       </Card>
 
@@ -62,72 +187,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
           <h2 className="text-lg font-semibold">Product Information</h2>
         </CardHeader>
         <CardContent>
-          <dl className="grid gap-4">
-            <div>
-              <dt className="font-medium">Variant Name</dt>
-              <dd className="text-muted-foreground">{productInfo.name}</dd>
-            </div>
-            <div>
-              <dt className="font-medium">Production Status</dt>
-              <dd>
-                {productInfo.in_production ? (
-                  <Badge variant="secondary">In Production</Badge>
-                ) : (
-                  <Badge variant="destructive">Discontinued</Badge>
-                )}
-              </dd>
-            </div>
-            {productInfo.sku && (
-              <div>
-                <dt className="font-medium">SKU</dt>
-                <dd className="text-muted-foreground">{productInfo.sku}</dd>
-              </div>
-            )}
-            {productInfo.ean_or_upc && (
-              <div>
-                <dt className="font-medium">EAN/UPC</dt>
-                <dd className="text-muted-foreground">{productInfo.ean_or_upc}</dd>
-              </div>
-            )}
-            {productInfo.msrp_ea && (
-              <div>
-                <dt className="font-medium">MSRP</dt>
-                <dd className="text-muted-foreground">${productInfo.msrp_ea.toFixed(2)}</dd>
-              </div>
-            )}
-            {productInfo.price_last_checked && (
-              <div>
-                <dt className="font-medium">Price Last Checked</dt>
-                <dd className="text-muted-foreground">{new Date(productInfo.price_last_checked).toLocaleDateString()}</dd>
-              </div>
-            )}
-            {productInfo.official_product_page_url && (
-              <div>
-                <dt className="font-medium">Product Page</dt>
-                <dd>
-                  <Button variant="link" asChild className="h-auto p-0">
-                    <Link href={productInfo.official_product_page_url} target="_blank">
-                      Visit manufacturer website
-                      <ExternalLink className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </dd>
-              </div>
-            )}
-            {productInfo.spec_sheet_url && (
-              <div>
-                <dt className="font-medium">Specification Sheet</dt>
-                <dd>
-                  <Button variant="link" asChild className="h-auto p-0">
-                    <Link href={productInfo.spec_sheet_url} target="_blank">
-                      Download PDF
-                      <ExternalLink className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </dd>
-              </div>
-            )}
-          </dl>
+          <ProductInfo device={device} />
         </CardContent>
       </Card>
 
@@ -136,44 +196,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
           <h2 className="text-lg font-semibold">Matter Information</h2>
         </CardHeader>
         <CardContent>
-          <dl className="grid gap-4">
-            <div>
-              <dt className="font-medium">Matter Certified</dt>
-              <dd>
-                {device.matter_info.matter_certified ? (
-                  <Badge variant="secondary">Yes</Badge>
-                ) : device.matter_info.matter_certified === false ? (
-                  <Badge variant="outline">No</Badge>
-                ) : (
-                  <span className="text-muted-foreground">Not specified</span>
-                )}
-              </dd>
-            </div>
-            <div>
-              <dt className="font-medium">Direct Matter Code</dt>
-              <dd>
-                {device.matter_info.includes_direct_matter_code ? (
-                  <Badge>Yes</Badge>
-                ) : device.matter_info.includes_direct_matter_code === false ? (
-                  <Badge variant="outline">No</Badge>
-                ) : (
-                  <span className="text-muted-foreground">Not specified</span>
-                )}
-              </dd>
-            </div>
-            <div>
-              <dt className="font-medium">App Required</dt>
-              <dd>
-                {device.matter_info.app_required_for_full_functionality ? (
-                  <Badge variant="destructive">Yes</Badge>
-                ) : device.matter_info.app_required_for_full_functionality === false ? (
-                  <Badge variant="outline">No</Badge>
-                ) : (
-                  <span className="text-muted-foreground">Not specified</span>
-                )}
-              </dd>
-            </div>
-          </dl>
+          <MatterInfo device={device} />
         </CardContent>
       </Card>
 
@@ -182,71 +205,11 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
           <h2 className="text-lg font-semibold">Device Information</h2>
         </CardHeader>
         <CardContent>
-          <dl className="grid gap-4">
-            <div>
-              <dt className="font-medium">Socket</dt>
-              <dd className="text-muted-foreground">{device.device_info.socket}</dd>
-            </div>
-            <div>
-              <dt className="font-medium">Bulb Shape</dt>
-              <dd className="text-muted-foreground">{device.device_info.bulb_shape}</dd>
-            </div>
-            <div>
-              <dt className="font-medium">Style</dt>
-              <dd className="text-muted-foreground">{device.device_info.style}</dd>
-            </div>
-            <div>
-              <dt className="font-medium">LED Category</dt>
-              <dd className="text-muted-foreground">{device.device_info.led_category}</dd>
-            </div>
-            <div>
-              <dt className="font-medium">Materials</dt>
-              <dd className="text-muted-foreground">
-                Housing: {device.device_info.housing_material}
-                <br />
-                Lens: {device.device_info.bulb_lens_material}
-              </dd>
-            </div>
-            {device.device_info.brightness_lm && (
-              <div>
-                <dt className="font-medium">Brightness</dt>
-                <dd className="text-muted-foreground">{device.device_info.brightness_lm} lumens</dd>
-              </div>
-            )}
-            {device.device_info.rated_power_w && (
-              <div>
-                <dt className="font-medium">Rated Power</dt>
-                <dd className="text-muted-foreground">{device.device_info.rated_power_w}W</dd>
-              </div>
-            )}
-            {device.device_info.eqiv_power_w && (
-              <div>
-                <dt className="font-medium">Equivalent Power</dt>
-                <dd className="text-muted-foreground">{device.device_info.eqiv_power_w}W</dd>
-              </div>
-            )}
-            {device.device_info.beam_angle_deg && (
-              <div>
-                <dt className="font-medium">Beam Angle</dt>
-                <dd className="text-muted-foreground">{device.device_info.beam_angle_deg}°</dd>
-              </div>
-            )}
-            {device.device_info.white_color_temp_range_k_start && device.device_info.white_color_temp_range_k_end && (
-              <div>
-                <dt className="font-medium">Color Temperature Range</dt>
-                <dd className="text-muted-foreground">
-                  {device.device_info.white_color_temp_range_k_start}K -{" "}
-                  {device.device_info.white_color_temp_range_k_end}K
-                </dd>
-              </div>
-            )}
-            {device.device_info.color_rendering_index_cri && (
-              <div>
-                <dt className="font-medium">Color Rendering Index (CRI)</dt>
-                <dd className="text-muted-foreground">{device.device_info.color_rendering_index_cri}</dd>
-              </div>
-            )}
-          </dl>
+          {isLightDevice(device) ? (
+            <LightDeviceDetails device={device} />
+          ) : isLockDevice(device) ? (
+            <LockDeviceDetails device={device} />
+          ) : null}
         </CardContent>
       </Card>
 

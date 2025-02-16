@@ -37,7 +37,7 @@ product_info:
         brightness_lm: 1500
         rated_power_w: 24
     
-matter_info:
+connectivity_info:
   matter_certified: true
   includes_direct_matter_code: true
   app_required_for_full_functionality: false
@@ -54,5 +54,3 @@ device_info:
   white_color_temp_range_k_end: null
   color_rendering_index_cri: null
 ---
-
-## Notes 

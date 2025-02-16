@@ -29,7 +29,7 @@ product_info:
       msrp_ea: 
       price_last_checked: 
 
-matter_info:
+connectivity_info:
   matter_certified: 
   includes_direct_matter_code: 
   app_required_for_full_functionality: 

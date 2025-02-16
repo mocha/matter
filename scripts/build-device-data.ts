@@ -6,6 +6,7 @@ import { z } from 'zod' // For validation
 
 // Define the device info schema once
 const DeviceInfoSchema = z.object({
+  // Light-specific fields
   socket: z.string().optional().nullable(),
   bulb_shape: z.string().optional().nullable(),
   style: z.string().optional().nullable(),
@@ -19,6 +20,16 @@ const DeviceInfoSchema = z.object({
   white_color_temp_range_k_start: z.number().optional().nullable(),
   white_color_temp_range_k_end: z.number().optional().nullable(),
   color_rendering_index_cri: z.number().optional().nullable(),
+  // Lock-specific fields
+  unlock_with_pin: z.boolean().optional().nullable(),
+  unlock_with_rfid: z.boolean().optional().nullable(),
+  unlock_with_fingerprint: z.boolean().optional().nullable(),
+  unlock_with_facial_recognition: z.boolean().optional().nullable(),
+  unlock_with_proprietary: z.boolean().optional().nullable(),
+  bluetooth: z.boolean().optional().nullable(),
+  wifi: z.boolean().optional().nullable(),
+  battery: z.boolean().optional().nullable(),
+  battery_type: z.string().optional().nullable(),
 })
 
 // Use the same schema for variants, but make it optional
@@ -48,7 +59,7 @@ const DeviceSchema = z.object({
     z.object({ variants: z.array(ProductInfoSchema) }),
     ProductInfoSchema
   ]),
-  matter_info: z.object({
+  connectivity_info: z.object({
     matter_certified: z.boolean().optional().nullable(),
     includes_direct_matter_code: z.boolean().optional().nullable(),
     app_required_for_full_functionality: z.boolean().optional().nullable(),
@@ -65,6 +76,9 @@ async function buildDeviceData() {
       const { data, content: markdown } = matter(content)
       
       const result = DeviceSchema.safeParse(data)
+
+      // Log the parsed result for debugging
+      console.log(`Parsed data from ${file}:`, JSON.stringify(result, null, 2));
       
       if (!result.success) {
         console.error(`Validation error in file ${file}:`)
@@ -80,8 +94,8 @@ async function buildDeviceData() {
           id: baseId,
           general_info: result.data.general_info,
           product_info: result.data.product_info || {},
-          matter_info: result.data.matter_info,
-          device_info: result.data.device_info,
+          connectivity_info: result.data.connectivity_info,
+          device_info: result.data.device_info || {}, // Ensure device_info is not undefined
           notes_content: markdown,
           path: file,
           gh_file_url: `https://github.com/mocha/matter/${file}`
@@ -95,23 +109,32 @@ async function buildDeviceData() {
           ? `-${variant.name.toLowerCase().replace(/\s+/g, '-')}` 
           : ''
         
+        const baseProductInfo = ('variants' in result.data.product_info 
+          ? result.data.product_info 
+          : {}) as { 
+            official_product_page_url?: string | null,
+            page_last_checked?: Date | null 
+          }
+
+        // Determine the correct device_info based on the type
+        const deviceInfo = result.data.general_info.type === 'lock'
+          ? { ...result.data.device_info } // Lock-specific device_info
+          : { ...result.data.device_info, ...variant.variant_device_info } // Light-specific device_info
+
         return {
           id: baseId + variantId,
           general_info: result.data.general_info,
           product_info: {
             ...variant,
             variant_device_info: undefined,
-            official_product_page_url: result.data.product_info.official_product_page_url,
-            page_last_checked: result.data.product_info.page_last_checked
+            official_product_page_url: baseProductInfo.official_product_page_url,
+            page_last_checked: baseProductInfo.page_last_checked
           },
-          matter_info: result.data.matter_info,
-          device_info: {
-            ...result.data.device_info,
-            ...variant.variant_device_info
-          },
+          connectivity_info: result.data.connectivity_info,
+          device_info: deviceInfo,
           notes_content: markdown,
           path: file,
-          gh_file_url: `https://github.com/mocha/matter/${file}`
+          gh_file_url: `https://github.com/mocha/matter/blob/main/${file}?plain=1`
         }
       })
     } catch (error) {

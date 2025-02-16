@@ -16,7 +16,7 @@ product_info:
       msrp_ea: 10.99
       price_last_checked: "2025-02-14"
 
-matter_info:
+connectivity_info:
   matter_certified: true
   includes_direct_matter_code: false
   app_required_for_full_functionality: true
@@ -39,5 +39,3 @@ device_info:
 cool_new_shit: "thing"
 
 ---
-
-## Notes
