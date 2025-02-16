@@ -119,4 +119,30 @@ export const DEVICE_COLUMNS: Record<'light' | 'lock', ColumnConfig[]> = {
       )
     },
   ]
-} 
+}
+
+export const filterDevices = (devices, searchTerm, filters, visibleColumnConfigs) => {
+  return devices.filter((device) => {
+    // Search filter
+    if (searchTerm) {
+      const searchFields = getSearchFields(device);
+      const matchesSearch = searchFields.some((field) => 
+        field?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      if (!matchesSearch) return false;
+    }
+
+    // Column filters
+    for (const [column, selectedValues] of Object.entries(filters)) {
+      if (selectedValues.size === 0) continue;
+
+      const columnConfig = visibleColumnConfigs.find((col) => col.key === column);
+      if (!columnConfig) continue;
+
+      const value = String(columnConfig.path(device));
+      if (!selectedValues.has(value)) return false;
+    }
+
+    return true;
+  });
+}; 

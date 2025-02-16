@@ -17,6 +17,7 @@ import { getSearchFields } from "@/lib/utils/device-utils"
 import { isLightDevice } from "@/lib/utils/type-guards"
 import { getColorTempGradientStyle } from "@/lib/utils/color-utils"
 import { useSearchParams, useRouter } from 'next/navigation'
+import { filterDevices } from "@/lib/utils/device-utils"
 
 interface DeviceGridProps {
   devices: Device[]
@@ -180,29 +181,7 @@ export function DeviceGrid({ devices }: DeviceGridProps) {
   }, [typeFilteredDevices, visibleColumnConfigs])
 
   // Filter devices based on selected filters
-  const filteredDevices = typeFilteredDevices.filter((device) => {
-    // Search filter
-    if (searchTerm) {
-      const searchFields = getSearchFields(device)
-      const matchesSearch = searchFields.some((field) => 
-        field?.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-      if (!matchesSearch) return false
-    }
-
-    // Column filters
-    for (const [column, selectedValues] of Object.entries(filters)) {
-      if (selectedValues.size === 0) continue
-      
-      const columnConfig = visibleColumnConfigs.find((col) => col.key === column)
-      if (!columnConfig) continue
-
-      const value = String(columnConfig.path(device))
-      if (!selectedValues.has(value)) return false
-    }
-
-    return true
-  })
+  const filteredDevices = filterDevices(typeFilteredDevices, searchTerm, filters, visibleColumnConfigs)
 
   const sortedDevices = [...filteredDevices].sort((a, b) => {
     if (!sortConfig.key) return 0
