@@ -9,15 +9,13 @@ import { Badge } from "@/components/ui/badge"
 import { Search, X } from "lucide-react"
 import { ColumnsDropdown } from "./columns-dropdown"
 import { FilterPopover } from "./filter-popover"
-import type { Device } from "@/lib/types/device"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import type { ColumnConfig } from "@/lib/types/columns"
-import { getColumnsForType } from "./columns-dropdown"
-import { getSearchFields } from "@/lib/utils/device-utils"
-import { isLightDevice } from "@/lib/utils/type-guards"
-import { getColorTempGradientStyle } from "@/lib/utils/color-utils"
+import type { Device } from "@/lib/schema/device"
+import type { ColumnConfig } from "@/lib/types/column-config"
+import { SHARED_COLUMNS, DEVICE_COLUMNS } from "@/lib/types/columns"
 import { useSearchParams, useRouter } from 'next/navigation'
 import { filterDevices } from "@/lib/utils/device-utils"
+import { cn } from "@/lib/utils"
 
 interface DeviceGridProps {
   devices: Device[]
@@ -40,8 +38,35 @@ type TableState = {
   activeType?: 'light' | 'lock'
 }
 
-// Default visible columns, remove "type" since we have tabs now
-const DEFAULT_VISIBLE_COLUMNS = ["model", "make", "led_category", "socket", "matter_certified", "direct_code"]
+// Define default columns by device type
+const DEFAULT_VISIBLE_COLUMNS_BY_TYPE: Record<'light' | 'lock', string[]> = {
+  light: [
+    "make",
+    "model",
+    "in_production",
+    "msrp_ea",
+    "socket",
+    "bulb_shape",
+    "style",
+    "led_category",
+    "housing_material",
+    "brightness_lm",
+    "white_color_temp_range_k_start",
+    "white_color_temp_range_k_end"
+  ],
+  lock: [
+    "make",
+    "model",
+    "in_production",
+    "msrp_ea",
+    "unlock_with_pin",
+    "unlock_with_rfid",
+    "unlock_with_fingerprint",
+    "unlock_with_facial_recognition",
+    "battery",
+    "battery_type"
+  ]
+};
 
 // Load state from session storage
 const loadTableState = (): TableState => {
@@ -50,7 +75,7 @@ const loadTableState = (): TableState => {
       searchTerm: "",
       sortConfig: { key: "", direction: "asc" },
       filters: {} as Filters,
-      visibleColumns: DEFAULT_VISIBLE_COLUMNS,
+      visibleColumns: DEFAULT_VISIBLE_COLUMNS_BY_TYPE['light'],
       activeType: 'light'
     }
   }
@@ -78,7 +103,7 @@ const loadTableState = (): TableState => {
     searchTerm: "",
     sortConfig: { key: "", direction: "asc" },
     filters: {} as Filters,
-    visibleColumns: DEFAULT_VISIBLE_COLUMNS,
+    visibleColumns: DEFAULT_VISIBLE_COLUMNS_BY_TYPE['light'],
     activeType: 'light'
   }
 }
@@ -99,19 +124,49 @@ const saveTableState = (state: TableState) => {
   }
 }
 
-// Update the color temp section to use proper type narrowing
-const colorTempSection = (device: Device, column: ColumnConfig) => {
-  if (!isLightDevice(device)) return null
+// Get all columns for a device type
+const getAllColumns = (deviceType: 'light' | 'lock'): ColumnConfig[] => {
+  console.log("Getting columns for device type:", deviceType);
   
-  const { white_color_temp_range_k_start, white_color_temp_range_k_end } = device.device_info
-  if (!white_color_temp_range_k_start || !white_color_temp_range_k_end) return null
+  const deviceColumns = DEVICE_COLUMNS[deviceType];
+  console.log("Device-specific columns:", deviceColumns);
   
-  return (
-    <span style={getColorTempGradientStyle(white_color_temp_range_k_start, white_color_temp_range_k_end)}>
-      {column.path(device)}
-    </span>
-  )
-}
+  if (!deviceColumns) {
+    throw new Error(`No columns found for device type: ${deviceType}`);
+  }
+
+  console.log("SHARED_COLUMNS:", SHARED_COLUMNS);
+  
+  // Combine columns and ensure no duplicates using Set
+  const allColumns = [
+    ...SHARED_COLUMNS,
+    ...deviceColumns
+  ];
+  console.log("Combined columns before deduplication:", allColumns);
+
+  // Remove duplicates while preserving order
+  const seen = new Set();
+  const finalColumns = allColumns.filter(col => {
+    console.log("Processing column:", col);
+    if (seen.has(col.key)) {
+      console.log(`Duplicate found for ${col.key}`);
+      return false;
+    }
+    seen.add(col.key);
+    return true;
+  });
+  
+  console.log("Final columns after deduplication:", finalColumns);
+  return finalColumns;
+};
+
+// Add column width configurations
+const COLUMN_MIN_WIDTHS: Record<string, string> = {
+  model: "min-w-[300px]",
+  make: "min-w-[120px]",
+  socket: "min-w-[100px]",
+  // Add more column widths as needed
+};
 
 export function DeviceGrid({ devices }: DeviceGridProps) {
   const router = useRouter()
@@ -124,7 +179,9 @@ export function DeviceGrid({ devices }: DeviceGridProps) {
   )
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: "", direction: "asc" })
   const [filters, setFilters] = useState<Filters>({})
-  const [visibleColumns, setVisibleColumns] = useState<string[]>(DEFAULT_VISIBLE_COLUMNS)
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(
+    DEFAULT_VISIBLE_COLUMNS_BY_TYPE[activeType]
+  )
   const [showBanner, setShowBanner] = useState(false)
 
   useEffect(() => {
@@ -152,67 +209,84 @@ export function DeviceGrid({ devices }: DeviceGridProps) {
     updateUrlParams(newType)
   }
 
-  // Ensure that the visible columns are consistent
-  const visibleColumnConfigs = getColumnsForType(activeType).filter((col) => 
-    visibleColumns.includes(col.key)
-  )
-
-  // Sort visibleColumnConfigs to match the order of visibleColumns
-  const sortedVisibleColumnConfigs = visibleColumns
-    .map((key) => visibleColumnConfigs.find((col) => col.key === key))
-    .filter(Boolean) as ColumnConfig[]
+  // Get visible column configs
+  const visibleColumnConfigs = useMemo(() => {
+    console.log("Active type:", activeType);
+    console.log("All available columns:", getAllColumns(activeType));
+    console.log("Visible column keys:", visibleColumns);
+    
+    const filtered = getAllColumns(activeType).filter(column => {
+      const isVisible = visibleColumns.includes(column.key);
+      console.log(`Column ${column.key}: visible = ${isVisible}`);
+      return isVisible;
+    });
+    
+    console.log("Final filtered columns:", filtered);
+    return filtered;
+  }, [visibleColumns, activeType]);
 
   // Filter devices by type first
-  const typeFilteredDevices = devices.filter(d => d.general_info.type === activeType)
+  const typeFilteredDevices = devices.filter(d => d.type === activeType)
 
   // Update filterOptions to only show relevant options for current device type
   const filterOptions = useMemo(() => {
-    return visibleColumnConfigs.reduce(
-      (acc, { key, path }) => {
-        const values = new Set(typeFilteredDevices.map(d => String(path(d))))
-        const sortedValues = Array.from(values)
-          .filter(v => v !== "null" && v !== "undefined")
-          .sort((a, b) => a.localeCompare(b))
-        acc[key] = sortedValues
-        return acc
-      },
-      {} as Record<string, string[]>,
-    )
-  }, [typeFilteredDevices, visibleColumnConfigs])
+    return visibleColumnConfigs
+      .filter(col => col.metadata?.filterable) // Only include filterable columns
+      .reduce(
+        (acc, { key, path }) => {
+          const values = new Set(typeFilteredDevices.map(d => String(path(d))));
+          const sortedValues = Array.from(values)
+            .filter(v => v !== "null" && v !== "undefined")
+            .sort((a, b) => a.localeCompare(b));
+          acc[key] = sortedValues;
+          return acc;
+        },
+        {} as Record<string, string[]>,
+      );
+  }, [typeFilteredDevices, visibleColumnConfigs]);
 
   // Filter devices based on selected filters
-  const filteredDevices = filterDevices(typeFilteredDevices, searchTerm, filters, visibleColumnConfigs)
+  const filteredDevices = filterDevices(typeFilteredDevices, searchTerm, filters);
 
-  const sortedDevices = [...filteredDevices].sort((a, b) => {
-    if (!sortConfig.key) return 0
+  // Sort devices
+  const sortedDevices = useMemo(() => {
+    console.log("Sorting with config:", sortConfig);
+    if (!sortConfig.key) return filteredDevices;
 
-    const column = visibleColumnConfigs.find((col) => col.key === sortConfig.key)
-    if (!column) return 0
+    return [...filteredDevices].sort((a, b) => {
+      const column = visibleColumnConfigs.find(col => col.key === sortConfig.key);
+      console.log("Sort column:", column);
+      if (!column) return 0;
 
-    const aValue = column.path(a)
-    const bValue = column.path(b)
+      const aValue = column.path(a);
+      const bValue = column.path(b);
+      console.log(`Comparing ${aValue} to ${bValue}`);
 
-    // Handle null/undefined values in sorting
-    if (aValue == null && bValue == null) return 0
-    if (aValue == null) return 1
-    if (bValue == null) return -1
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return 1;
+      if (bValue == null) return -1;
 
-    return sortConfig.direction === "asc" 
-      ? aValue > bValue ? 1 : -1
-      : aValue < bValue ? 1 : -1
-  })
+      return sortConfig.direction === "asc" 
+        ? aValue > bValue ? 1 : -1
+        : aValue < bValue ? 1 : -1;
+    });
+  }, [filteredDevices, sortConfig, visibleColumnConfigs]);
 
   const toggleSort = (key: string) => {
-    setSortConfig({
+    console.log("Toggling sort for:", key);
+    setSortConfig(current => ({
       key,
-      direction: sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc",
-    })
-  }
+      direction: current.key === key && current.direction === "asc" ? "desc" : "asc",
+    }));
+  };
 
   const toggleColumn = (columnKey: string) => {
-    setVisibleColumns((current) =>
-      current.includes(columnKey) ? current.filter((key) => key !== columnKey) : [...current, columnKey],
-    )
+    setVisibleColumns((current) => {
+      const newColumns = current.includes(columnKey) 
+        ? current.filter((key) => key !== columnKey) 
+        : [...current, columnKey]
+      return newColumns
+    })
   }
 
   const handleFilterChange = (column: string, values: Set<string>) => {
@@ -222,7 +296,22 @@ export function DeviceGrid({ devices }: DeviceGridProps) {
     }))
   }
 
-  const activeFilterCount = Object.values(filters).reduce((count, values) => count + (values.size > 0 ? 1 : 0), 0)
+  const activeFilterCount = Object.values(filters).reduce(
+    (count, values) => count + (values.size > 0 ? 1 : 0), 
+    0
+  )
+
+  // Update visibleColumns when activeType changes
+  useEffect(() => {
+    setVisibleColumns(DEFAULT_VISIBLE_COLUMNS_BY_TYPE[activeType]);
+  }, [activeType]);
+
+  console.log("Initial devices:", devices.length);
+  console.log("Type filtered devices:", typeFilteredDevices.length);
+  console.log("Active type:", activeType);
+  console.log("Sorted Devices:", sortedDevices);
+  console.log("Visible Column Configs:", visibleColumnConfigs);
+  console.log("DEVICE_COLUMNS:", DEVICE_COLUMNS);
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -230,7 +319,7 @@ export function DeviceGrid({ devices }: DeviceGridProps) {
         {showBanner && (
           <div className="bg-blue-500 text-white p-4 rounded-md">
             <p className="mb-2">Matter.party (🥳🎊🎉) is a directory of Matter-compatible devices for you to browse at your leisure. The goal is to provide a comprehensive directory to help you find the right device for your next project. This is a work in progress and it'd be even better with your help! If you have some devices you can add, please do so on <a href="https://github.com/mocha/matter" target="_blank" rel="noopener noreferrer" className="underline">Github</a>!</p>
-            <Button variant="" onClick={dismissBanner}>
+            <Button variant="default" onClick={dismissBanner}>
               Cool! Let's go!
             </Button>
           </div>
@@ -281,12 +370,29 @@ export function DeviceGrid({ devices }: DeviceGridProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  {sortedVisibleColumnConfigs.map((column) => (
-                    <TableHead key={column.key}>
+                  {visibleColumnConfigs.map((column) => (
+                    <TableHead 
+                      key={column.key}
+                      className={cn(
+                        COLUMN_MIN_WIDTHS[column.key],
+                        column.metadata?.sortable && "cursor-pointer select-none",
+                      )}
+                      onClick={() => column.metadata?.sortable && toggleSort(column.key)}
+                    >
                       <div className="flex items-center gap-2">
-                        {filterOptions[column.key]?.length > 0 && (
+                        {column.label}
+                        {column.metadata?.sortable && (
+                          <span className="text-xs opacity-50">
+                            {sortConfig.key === column.key 
+                              ? sortConfig.direction === "asc" 
+                                ? "↑" 
+                                : "↓"
+                              : "↕"}
+                          </span>
+                        )}
+                        {column.metadata?.filterable && (
                           <FilterPopover
-                            column={column.key}
+                            column={column}
                             label={column.label}
                             options={filterOptions[column.key]}
                             selectedValues={filters[column.key] || new Set()}
@@ -308,25 +414,37 @@ export function DeviceGrid({ devices }: DeviceGridProps) {
                 ) : (
                   sortedDevices.map((device) => (
                     <TableRow key={device.id}>
-                      {sortedVisibleColumnConfigs.map((column) => (
-                        <TableCell key={column.key}>
-                          {column.key === "model" ? (
-                            <Link href={`/devices/${device.id}`} className="hover:underline">
-                              {column.path(device)}
-                            </Link>
-                          ) : column.key === "matter_certified" ||
-                            column.key === "direct_code" ||
-                            column.key === "app_required" ? (
-                            column.path(device) ? (
-                              <Badge variant={column.key === "matter_certified" ? "secondary" : "default"}>Yes</Badge>
-                            ) : null
-                          ) : column.key === "color_temp_range" ? (
-                            colorTempSection(device, column)
-                          ) : (
-                            column.path(device)
-                          )}
-                        </TableCell>
-                      ))}
+                      {visibleColumnConfigs.map((column) => {
+                        const value = column.path(device)
+                        
+                        return (
+                          <TableCell 
+                            key={column.key}
+                            className={COLUMN_MIN_WIDTHS[column.key]}
+                          >
+                            {value != null ? (
+                              column.key === "model" ? (
+                                <Link 
+                                  href={`/devices/${device.id}`}
+                                  className="text-primary hover:underline"
+                                >
+                                  {value}
+                                </Link>
+                              ) : column.metadata?.renderBadge ? (
+                                value === true || value === 'Yes' ? (
+                                  <Badge variant="secondary">Yes</Badge>
+                                ) : (
+                                  <Badge variant="outline">No</Badge>
+                                )
+                              ) : (
+                                <span>{value}</span>
+                              )
+                            ) : (
+                              <span className="text-muted-foreground">Not specified</span>
+                            )}
+                          </TableCell>
+                        )
+                      })}
                     </TableRow>
                   ))
                 )}

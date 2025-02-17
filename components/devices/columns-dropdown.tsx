@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -11,9 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import type { ColumnConfig } from "@/lib/types/columns"
-import { SHARED_COLUMNS } from "@/lib/types/columns"
-import { DEVICE_COLUMNS } from "@/lib/utils/device-utils"
+import { SHARED_COLUMNS, DEVICE_COLUMNS } from "@/lib/types/columns"
 
 interface ColumnsDropdownProps {
   visibleColumns: string[]
@@ -21,73 +18,49 @@ interface ColumnsDropdownProps {
   deviceType: 'light' | 'lock'
 }
 
-export function ColumnsDropdown({ visibleColumns, onColumnToggle, deviceType }: ColumnsDropdownProps) {
-  const [mounted, setMounted] = React.useState(false)
+export function ColumnsDropdown({
+  visibleColumns,
+  onColumnToggle,
+  deviceType
+}: ColumnsDropdownProps) {
   const [open, setOpen] = React.useState(false)
-
-  React.useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  const groups = React.useMemo(() => {
-    const deviceColumns = DEVICE_COLUMNS[deviceType]
-    return {
-      General: SHARED_COLUMNS.filter(c => c.group === "General"),
-      Device: deviceColumns,
-      Matter: SHARED_COLUMNS.filter(c => c.group === "Matter"),
-    }
-  }, [deviceType])
-
-  if (!mounted) {
-    return (
-      <Button variant="outline" className="ml-2">
-        Columns
-      </Button>
-    )
-  }
-
+  const allColumns = [...SHARED_COLUMNS, ...DEVICE_COLUMNS[deviceType]];
+  
+  // Group columns by their group property
+  const columnsByGroup = allColumns.reduce((acc, column) => {
+    const group = column.group;
+    if (!acc[group]) acc[group] = [];
+    acc[group].push(column);
+    return acc;
+  }, {} as Record<string, typeof allColumns>);
+  
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
+    <DropdownMenu modal={false} open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="ml-2">
-          Columns
-        </Button>
+        <Button variant="outline">Columns</Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[200px]">
-        <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {Object.entries(groups).map(([group, columns]) => (
-          <React.Fragment key={group}>
-            <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">{group}</DropdownMenuLabel>
-            {columns.map((column) => (
-              <DropdownMenuCheckboxItem
-                key={column.key}
-                checked={visibleColumns.includes(column.key)}
-                onCheckedChange={() => {
-                  onColumnToggle(column.key)
-                  setOpen(true)
-                }}
-                onSelect={(e) => {
-                  e.preventDefault()
-                }}
-              >
-                <span className="flex items-center">
-                  {column.label}
-                </span>
-              </DropdownMenuCheckboxItem>
-            ))}
+      <DropdownMenuContent align="end" className="w-[600px] flex flex-row gap-4 p-4">
+        {Object.entries(columnsByGroup).map(([group, columns]) => (
+          <div key={group} className="flex-1">
+            <DropdownMenuLabel className="text-sm font-semibold">{group}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-          </React.Fragment>
+            <div className="space-y-1">
+              {columns.map((column) => (
+                <DropdownMenuCheckboxItem
+                  key={column.key}
+                  className="capitalize"
+                  checked={visibleColumns.includes(column.key)}
+                  onSelect={(e) => e.preventDefault()}
+                  onCheckedChange={() => onColumnToggle(column.key)}
+                >
+                  {column.label}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </div>
+          </div>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
   )
-}
-
-export const getColumnsForType = (type: 'light' | 'lock'): ColumnConfig[] => {
-  return [
-    ...SHARED_COLUMNS,
-    ...DEVICE_COLUMNS[type]
-  ]
 }
 

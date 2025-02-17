@@ -1,15 +1,18 @@
 import { notFound } from "next/navigation"
-import { DeviceDetails } from "@/components/devices/device-details"
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import type { Metadata } from 'next'
-import type { Device } from "@/lib/types/device"
+import type { Device } from "@/lib/schema/device"
+import { ClientDeviceDetails } from "@/components/devices/client-device-details"
+import { isLightDevice, isLockDevice } from "@/lib/utils/type-guards"
 
 function getAllDevices(): Device[] {
   try {
     const filePath = join(process.cwd(), 'public', 'device-data.json')
     const jsonData = readFileSync(filePath, 'utf8')
-    return JSON.parse(jsonData)
+    const devices = JSON.parse(jsonData)
+    console.log("Loaded devices:", devices.length)
+    return devices
   } catch (error) {
     console.error('Error loading device data:', error)
     throw error // Let Next.js handle the error during build
@@ -35,24 +38,21 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     }
   }
 
+  const keywords = [
+    'specifications',
+    isLightDevice(device) ? device.device_info.socket : undefined,
+    isLightDevice(device) ? device.device_info.led_category : undefined,
+  ].filter(Boolean) as string[]  // Filter out nullish values
+
   const metadata: Metadata = {
     title: `${device.general_info.make} ${device.general_info.model} - Matter Device Directory`,
     description: `Specifications and details for the ${device.general_info.make} ${device.general_info.model} Matter-compatible ${device.general_info.type}`,
     openGraph: {
       title: `${device.general_info.make} ${device.general_info.model}`,
-      description: `Matter-compatible ${device.general_info.type}`,
+      description: `Matter-compatible ${device.type}`,
       type: 'article',
     },
-    keywords: [
-      device.general_info.make,
-      device.general_info.model,
-      'matter',
-      device.general_info.type,
-      'smart home',
-      'specifications',
-      device.device_info?.socket,
-      device.device_info?.led_category,
-    ].filter(Boolean) as string[]  // Filter out nullish values
+    keywords: keywords,
   }
 
   return metadata
@@ -68,7 +68,7 @@ export default function DevicePage({ params }: { params: { id: string } }) {
 
   return (
     <main className="container py-6">
-      <DeviceDetails device={device} />
+      <ClientDeviceDetails device={device} />
     </main>
   )
 }

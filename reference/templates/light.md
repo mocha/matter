@@ -2,7 +2,7 @@
 general_info:
   make: 
   model: 
-  type: "lighting"
+  type: "light"
 
 product_info: 
   variants:
@@ -33,6 +33,15 @@ connectivity_info:
   matter_certified: 
   includes_direct_matter_code: 
   app_required_for_full_functionality: 
+  works_with_homekit:
+  works_with_alexa:
+  works_with_google_assistant:
+  works_with_matter:
+  works_with_zigbee:
+  works_with_zwave:
+  works_with_thread:
+  works_with_bluetooth:
+  works_with_wifi:
 
 device_info:
   socket: 

@@ -20,6 +20,15 @@ connectivity_info:
   matter_certified: true
   includes_direct_matter_code: true
   app_required_for_full_functionality: false
+  works_with_homekit: true
+  works_with_alexa: true
+  works_with_google_assistant: true
+  works_with_matter: true
+  works_with_zigbee: 
+  works_with_zwave: 
+  works_with_thread:
+  works_with_bluetooth: 
+  works_with_wifi: true
 
 device_info:
   socket: "GU10"

@@ -24,7 +24,7 @@ export default function RootLayout({
       <body>
         <div className="flex flex-col min-h-screen">
           <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 h-14 bg-black text-white">
-            <div className="font-bold text-xl">🥳 matter.party!</div>
+            <div className="font-bold text-xl"><a href="/" className="hover:text-gray-300">🥳 matter.party!</a></div>
             <a href="https://github.com/mocha/matter" target="_blank" rel="noopener noreferrer">
               <GithubIcon className="h-6 w-6 ml-2 inline-block" />
             </a>

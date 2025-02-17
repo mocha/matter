@@ -29,7 +29,7 @@ function GeneralInfo({ device }: DeviceDetailsProps) {
       </div>
       <div>
         <dt className="font-medium">Type</dt>
-        <dd className="text-muted-foreground">{device.general_info.type}</dd>
+        <dd className="text-muted-foreground">{device.type}</dd>
       </div>
     </dl>
   )
@@ -108,7 +108,7 @@ function ProductInfo({ device }: DeviceDetailsProps) {
   )
 }
 
-function MatterInfo({ device }: DeviceDetailsProps) {
+function ConnectivityInfo({ device }: DeviceDetailsProps) {
   return (
     <dl className="device-details">
       <div>
@@ -147,19 +147,49 @@ function MatterInfo({ device }: DeviceDetailsProps) {
           )}
         </dd>
       </div>
+      {device.connectivity_info?.works_with_homekit && (
+        <div>
+          <dt className="font-medium">Works with HomeKit</dt>
+          <dd><Badge variant="secondary">Yes</Badge></dd>
+        </div>
+      )}
+      {device.connectivity_info?.works_with_alexa && (
+        <div>
+          <dt className="font-medium">Works with Alexa</dt>
+          <dd><Badge variant="secondary">Yes</Badge></dd>
+        </div>
+      )}
+      {device.connectivity_info?.works_with_google_assistant && (
+        <div>
+          <dt className="font-medium">Works with Google Assistant</dt>
+          <dd><Badge variant="secondary">Yes</Badge></dd>
+        </div>
+      )}
     </dl>
   )
 }
 
 export function DeviceDetails({ device }: DeviceDetailsProps) {
-  // Get the device type to use as the default tab when returning
-  const deviceType = device.general_info.type
+  console.log("=== DeviceDetails RENDER ===");
+  console.log("Device type (raw):", JSON.stringify(device.type));
+  console.log("Device type (lowercase):", device.type?.toLowerCase());
+  console.log("Device type (trimmed):", device.type?.trim());
+  
+  const deviceType = device.type;
+  console.log("Is light device?", isLightDevice(device));
+  console.log("Is lock device?", isLockDevice(device));
+  console.log(device)
+  
+  if (!device) {
+    console.error("No device provided to DeviceDetails");
+    return <div>No device found</div>;
+  }
 
   return (
     <div className="space-y-6 p-4">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" asChild>
-          <Link href={`/?type=${deviceType}`} className="flex items-center gap-2">
+          <Link href={`/?type=${device.type}`} className="flex items-center gap-2">
             <ArrowLeft className="h-4 w-4" />
             Back to devices
           </Link>
@@ -193,10 +223,10 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
 
       <Card>
         <CardHeader>
-          <h2 className="text-lg font-semibold">Matter Information</h2>
+          <h2 className="text-lg font-semibold">Connectivity Information</h2>
         </CardHeader>
         <CardContent>
-          <MatterInfo device={device} />
+          <ConnectivityInfo device={device} />
         </CardContent>
       </Card>
 
@@ -209,7 +239,9 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
             <LightDeviceDetails device={device} />
           ) : isLockDevice(device) ? (
             <LockDeviceDetails device={device} />
-          ) : null}
+          ) : (
+            <div>Unknown device type: {deviceType}</div>
+          )}
         </CardContent>
       </Card>
 

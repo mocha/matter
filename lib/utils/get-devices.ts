@@ -4,7 +4,7 @@ import type { Device } from "@/lib/types/device"
 
 export async function getDevices(): Promise<Device[]> {
   try {
-    const filePath = join(process.cwd(), "lib", "data", "device-data.json")
+    const filePath = join(process.cwd(), "public", "device-data.json")
     const jsonData = await readFile(filePath, "utf8")
     return JSON.parse(jsonData) as Device[]
   } catch (error) {
