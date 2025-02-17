@@ -10,9 +10,7 @@ export function generateColumnConfigs(schema: z.ZodObject<any>): ColumnConfig[] 
     // Handle optional fields by unwrapping them
     const unwrappedField = field instanceof z.ZodOptional ? field._def.innerType : field;
     const metadata = unwrappedField.metadata;
-    
-    console.log(`Generating config for ${key}:`, { metadata });
-    
+        
     if (metadata && !seenKeys.has(key)) {
       seenKeys.add(key);
       configs.push({

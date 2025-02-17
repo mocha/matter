@@ -16,7 +16,6 @@ function withMetadata<T extends z.ZodType>(
   metadata: ColumnMetadata
 ): T & { metadata: ColumnMetadata } {
   const schemaWithMeta = Object.assign(schema, { metadata });
-  // console.log(`Added metadata to schema:`, { schema: schema, metadata: metadata });
   return schemaWithMeta;
 }
 
@@ -156,18 +155,13 @@ export type Device = z.infer<typeof DeviceSchema>;
 // Add the helper function
 export function generateColumnConfigs(schema: z.ZodObject<any>) {
   const configs: ColumnConfig[] = [];
-  
-  console.log("Generating columns for schema:", schema);
-  console.log("Schema shape:", schema.shape);
-  
+
   for (const [key, field] of Object.entries(schema.shape)) {
-    console.log(`Processing field ${key}:`, field);
+
     // Handle optional fields by unwrapping them
     const unwrappedField = field instanceof z.ZodOptional ? field._def.innerType : field;
-    console.log(`Unwrapped field for ${key}:`, unwrappedField);
     
     const metadata = unwrappedField.metadata;
-    console.log(`Metadata for ${key}:`, metadata);
     
     if (metadata) {
       configs.push({
@@ -185,6 +179,5 @@ export function generateColumnConfigs(schema: z.ZodObject<any>) {
     }
   }
   
-  console.log("Generated configs:", configs);
   return configs;
 } 

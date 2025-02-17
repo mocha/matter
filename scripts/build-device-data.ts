@@ -22,18 +22,12 @@ function removeNullValues<T extends Record<string, any>>(obj: T | null): T | nul
 
 async function buildDeviceData() {
   const files = await glob('./devices/**/*.md')
-  console.log(`Found ${files.length} files`);
   
   const devices = await Promise.all(files.flatMap(async (file) => {
     try {
       const content = await fs.readFile(file, 'utf-8')
       const { data, content: markdown } = matter(content)
       
-      // Debug the raw YAML data before schema validation
-      if (file.includes('u100-smart-deadbolt')) {
-        console.log('Raw YAML data:', JSON.stringify(data, null, 2))
-      }
-
       const markdownResult = MarkdownSchema.safeParse(data)
       if (!markdownResult.success) {
         console.error(`Markdown validation error in ${file}:`, markdownResult.error)
@@ -42,13 +36,6 @@ async function buildDeviceData() {
       
       const baseId = path.basename(file, '.md')
       const markdownData = markdownResult.data
-
-      // Debug logging for device info
-      if (markdownData.general_info.type === 'lock') {
-        console.log('Lock device found:', file)
-        console.log('Raw device_info:', markdownData.device_info)
-        console.log('Raw variants:', markdownData.product_info.variants)
-      }
 
       // If no variants exist, create a single device entry
       if (!markdownData.product_info.variants?.length) {
@@ -75,10 +62,6 @@ async function buildDeviceData() {
 
       // Process variants
       return markdownData.product_info.variants.map((variant) => {
-        if (markdownData.general_info.type === 'lock') {
-          console.log('Processing lock variant:', variant.name)
-          console.log('Device info before merge:', markdownData.device_info)
-        }
 
         const variantId = variant.name !== 'Standard' 
           ? `-${variant.name.toLowerCase().replace(/\s+/g, '-')}`
@@ -100,10 +83,6 @@ async function buildDeviceData() {
           path: file,
           gh_file_url: `https://github.com/mocha/matter/blob/main/${file}?plain=1`
         };
-
-        if (markdownData.general_info.type === 'lock') {
-          console.log('Final device info for variant:', cleanDevice.device_info)
-        }
 
         const deviceResult = DeviceSchema.safeParse(cleanDevice)
         if (!deviceResult.success) {

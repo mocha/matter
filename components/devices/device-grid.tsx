@@ -126,37 +126,29 @@ const saveTableState = (state: TableState) => {
 
 // Get all columns for a device type
 const getAllColumns = (deviceType: 'light' | 'lock'): ColumnConfig[] => {
-  console.log("Getting columns for device type:", deviceType);
   
   const deviceColumns = DEVICE_COLUMNS[deviceType];
-  console.log("Device-specific columns:", deviceColumns);
   
   if (!deviceColumns) {
     throw new Error(`No columns found for device type: ${deviceType}`);
   }
 
-  console.log("SHARED_COLUMNS:", SHARED_COLUMNS);
-  
   // Combine columns and ensure no duplicates using Set
   const allColumns = [
     ...SHARED_COLUMNS,
     ...deviceColumns
   ];
-  console.log("Combined columns before deduplication:", allColumns);
 
   // Remove duplicates while preserving order
   const seen = new Set();
   const finalColumns = allColumns.filter(col => {
-    console.log("Processing column:", col);
     if (seen.has(col.key)) {
-      console.log(`Duplicate found for ${col.key}`);
       return false;
     }
     seen.add(col.key);
     return true;
   });
   
-  console.log("Final columns after deduplication:", finalColumns);
   return finalColumns;
 };
 
@@ -211,17 +203,12 @@ export function DeviceGrid({ devices }: DeviceGridProps) {
 
   // Get visible column configs
   const visibleColumnConfigs = useMemo(() => {
-    console.log("Active type:", activeType);
-    console.log("All available columns:", getAllColumns(activeType));
-    console.log("Visible column keys:", visibleColumns);
     
     const filtered = getAllColumns(activeType).filter(column => {
       const isVisible = visibleColumns.includes(column.key);
-      console.log(`Column ${column.key}: visible = ${isVisible}`);
       return isVisible;
     });
     
-    console.log("Final filtered columns:", filtered);
     return filtered;
   }, [visibleColumns, activeType]);
 
@@ -250,17 +237,14 @@ export function DeviceGrid({ devices }: DeviceGridProps) {
 
   // Sort devices
   const sortedDevices = useMemo(() => {
-    console.log("Sorting with config:", sortConfig);
     if (!sortConfig.key) return filteredDevices;
 
     return [...filteredDevices].sort((a, b) => {
       const column = visibleColumnConfigs.find(col => col.key === sortConfig.key);
-      console.log("Sort column:", column);
       if (!column) return 0;
 
       const aValue = column.path(a);
       const bValue = column.path(b);
-      console.log(`Comparing ${aValue} to ${bValue}`);
 
       if (aValue == null && bValue == null) return 0;
       if (aValue == null) return 1;
@@ -273,7 +257,6 @@ export function DeviceGrid({ devices }: DeviceGridProps) {
   }, [filteredDevices, sortConfig, visibleColumnConfigs]);
 
   const toggleSort = (key: string) => {
-    console.log("Toggling sort for:", key);
     setSortConfig(current => ({
       key,
       direction: current.key === key && current.direction === "asc" ? "desc" : "asc",
@@ -305,13 +288,6 @@ export function DeviceGrid({ devices }: DeviceGridProps) {
   useEffect(() => {
     setVisibleColumns(DEFAULT_VISIBLE_COLUMNS_BY_TYPE[activeType]);
   }, [activeType]);
-
-  console.log("Initial devices:", devices.length);
-  console.log("Type filtered devices:", typeFilteredDevices.length);
-  console.log("Active type:", activeType);
-  console.log("Sorted Devices:", sortedDevices);
-  console.log("Visible Column Configs:", visibleColumnConfigs);
-  console.log("DEVICE_COLUMNS:", DEVICE_COLUMNS);
 
   return (
     <Suspense fallback={<div>Loading...</div>}>

@@ -9,25 +9,11 @@ import {
   generateColumnConfigs } from "@/lib/schema/device";
 
 // Generate column configs from schemas
-console.log("Generating General columns...");
 const generalColumns = generateColumnConfigs(GeneralInfoSchema);
-console.log("General columns:", generalColumns);
-
-console.log("Generating Product columns...");
 const productColumns = generateColumnConfigs(ProductInfoSchema);
-console.log("Product columns:", productColumns);
-
-console.log("Generating Connectivity columns...");
 const connectivityColumns = generateColumnConfigs(ConnectivityInfoSchema);
-console.log("Connectivity columns:", connectivityColumns);
-
-console.log("Generating Light Device columns...");
 const lightColumns = generateColumnConfigs(LightDeviceInfoSchema);
-console.log("Light Device columns:", lightColumns);
-
-console.log("Generating Lock Device columns...");
 const lockColumns = generateColumnConfigs(LockDeviceInfoSchema);
-console.log("Lock Device columns:", lockColumns);
 
 // Export shared columns
 export const SHARED_COLUMNS = [
@@ -62,11 +48,6 @@ export const DEVICE_COLUMNS = {
     }
   }))
 } as const;
-
-// Add some debug logging
-console.log('SHARED_COLUMNS:', SHARED_COLUMNS);
-console.log('LIGHT_COLUMNS:', DEVICE_COLUMNS.light);
-console.log('LOCK_COLUMNS:', DEVICE_COLUMNS.lock);
 
 // Export types for use in other parts of the application
 export type ColumnPath = (device: Device) => string | number | boolean | null | undefined;

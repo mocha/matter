@@ -11,7 +11,6 @@ function getAllDevices(): Device[] {
     const filePath = join(process.cwd(), 'public', 'device-data.json')
     const jsonData = readFileSync(filePath, 'utf8')
     const devices = JSON.parse(jsonData)
-    console.log("Loaded devices:", devices.length)
     return devices
   } catch (error) {
     console.error('Error loading device data:', error)

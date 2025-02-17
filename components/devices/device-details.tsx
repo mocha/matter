@@ -170,16 +170,9 @@ function ConnectivityInfo({ device }: DeviceDetailsProps) {
 }
 
 export function DeviceDetails({ device }: DeviceDetailsProps) {
-  console.log("=== DeviceDetails RENDER ===");
-  console.log("Device type (raw):", JSON.stringify(device.type));
-  console.log("Device type (lowercase):", device.type?.toLowerCase());
-  console.log("Device type (trimmed):", device.type?.trim());
   
   const deviceType = device.type;
-  console.log("Is light device?", isLightDevice(device));
-  console.log("Is lock device?", isLockDevice(device));
-  console.log(device)
-  
+
   if (!device) {
     console.error("No device provided to DeviceDetails");
     return <div>No device found</div>;
