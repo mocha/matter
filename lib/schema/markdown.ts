@@ -2,9 +2,11 @@ import { z } from 'zod';
 import { 
   GeneralInfoSchema, 
   ConnectivityInfoSchema,
+  ProductInfoSchema,
   LightDeviceInfoSchema,
   LockDeviceInfoSchema,
-  ProductInfoSchema
+  SensorDeviceInfoSchema,
+  ControllerDeviceInfoSchema
 } from './device';
 
 // Create a variant-specific product info schema that uses strings for dates
@@ -29,10 +31,24 @@ export const MarkdownSchema = z.object({
   connectivity_info: ConnectivityInfoSchema,
   device_info: z.record(z.any())
 }).refine((data) => {
-  if (data.general_info.type === 'lock') {
-    return LockDeviceInfoSchema.safeParse(data.device_info).success;
-  } else {
-    return LightDeviceInfoSchema.safeParse(data.device_info).success;
+  switch (data.general_info.type) {
+    case 'light':
+      return LightDeviceInfoSchema.safeParse(data.device_info).success;
+    case 'lock':
+      return LockDeviceInfoSchema.safeParse(data.device_info).success;
+    case 'sensor':
+      return SensorDeviceInfoSchema.safeParse(data.device_info).success;
+    case 'controller':
+      // Transform array to match schema expectation
+      const deviceInfo = {
+        ...data.device_info,
+        supports_device_types: Array.isArray(data.device_info.supports_device_types) 
+          ? data.device_info.supports_device_types 
+          : null
+      };
+      return ControllerDeviceInfoSchema.safeParse(deviceInfo).success;
+    default:
+      return false;
   }
 }, {
   message: "device_info must match the schema for the specified device type"

@@ -6,6 +6,8 @@ import {
   ConnectivityInfoSchema, 
   LightDeviceInfoSchema, 
   LockDeviceInfoSchema, 
+  SensorDeviceInfoSchema,
+  ControllerDeviceInfoSchema,
   generateColumnConfigs } from "@/lib/schema/device";
 
 // Generate column configs from schemas
@@ -19,34 +21,15 @@ const lockColumns = generateColumnConfigs(LockDeviceInfoSchema);
 export const SHARED_COLUMNS = [
   ...generalColumns,
   ...productColumns,
-  ...generateColumnConfigs(ConnectivityInfoSchema)
-].map(col => ({
-  ...col,
-  metadata: {
-    ...col.metadata,  // Spread original metadata first
-    sortable: col.metadata?.sortable ?? true,
-    filterable: col.metadata?.filterable ?? false
-  }
-}));
+  ...connectivityColumns
+];
 
 // Export device-specific columns
 export const DEVICE_COLUMNS = {
-  light: lightColumns.map(col => ({
-    ...col,
-    metadata: {
-      sortable: true,  // Explicitly set metadata
-      filterable: true,
-      ...col.metadata
-    }
-  })),
-  lock: lockColumns.map(col => ({
-    ...col,
-    metadata: {
-      sortable: true,  // Explicitly set metadata
-      filterable: true,
-      ...col.metadata
-    }
-  }))
+  light: generateColumnConfigs(LightDeviceInfoSchema),
+  lock: generateColumnConfigs(LockDeviceInfoSchema),
+  sensor: generateColumnConfigs(SensorDeviceInfoSchema),
+  controller: generateColumnConfigs(ControllerDeviceInfoSchema)
 } as const;
 
 // Export types for use in other parts of the application

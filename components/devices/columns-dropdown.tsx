@@ -15,7 +15,7 @@ import { SHARED_COLUMNS, DEVICE_COLUMNS } from "@/lib/types/columns"
 interface ColumnsDropdownProps {
   visibleColumns: string[]
   onColumnToggle: (column: string) => void
-  deviceType: 'light' | 'lock'
+  deviceType: 'light' | 'lock' | 'sensor' | 'controller'
 }
 
 export function ColumnsDropdown({

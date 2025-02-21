@@ -12,6 +12,9 @@ function removeNullValues<T extends Record<string, any>>(obj: T | null): T | nul
     Object.entries(obj)
       .filter(([_, v]) => v !== null && v !== "null")
       .map(([k, v]) => {
+        if (Array.isArray(v)) {
+          return [k, v]; // Preserve arrays as-is
+        }
         if (typeof v === 'object' && v !== null) {
           return [k, removeNullValues(v)];
         }

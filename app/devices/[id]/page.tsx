@@ -39,8 +39,8 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 
   const keywords = [
     'specifications',
-    isLightDevice(device) ? device.device_info.socket : undefined,
-    isLightDevice(device) ? device.device_info.led_category : undefined,
+    isLightDevice(device) ? device.device_info?.socket : undefined,
+    isLightDevice(device) ? device.device_info?.led_category : undefined,
   ].filter(Boolean) as string[]  // Filter out nullish values
 
   const metadata: Metadata = {

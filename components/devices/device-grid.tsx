@@ -30,16 +30,18 @@ type Filters = {
   [key: string]: Set<string>
 }
 
+type ActiveDeviceType = 'light' | 'lock' | 'sensor' | 'controller'
+
 type TableState = {
   searchTerm: string
   sortConfig: SortConfig
   filters: Filters
   visibleColumns: string[]
-  activeType?: 'light' | 'lock'
+  activeType?: ActiveDeviceType
 }
 
 // Define default columns by device type
-const DEFAULT_VISIBLE_COLUMNS_BY_TYPE: Record<'light' | 'lock', string[]> = {
+const DEFAULT_VISIBLE_COLUMNS_BY_TYPE: Record<ActiveDeviceType, string[]> = {
   light: [
     "make",
     "model",
@@ -65,6 +67,29 @@ const DEFAULT_VISIBLE_COLUMNS_BY_TYPE: Record<'light' | 'lock', string[]> = {
     "unlock_with_facial_recognition",
     "battery",
     "battery_type"
+  ],
+  sensor: [
+    "make",
+    "model",
+    "in_production",
+    "msrp_ea",
+    "sensors_contact",
+    "sensors_temperature",
+    "sensors_humidity",
+    "sensors_illuminance",
+    "sensors_air_quality",
+    "sensors_sound",
+    "sensors_air_pressure",
+    "battery"
+  ],
+  controller: [
+    "make",
+    "model",
+    "in_production",
+    "msrp_ea",
+    "hub_type",
+    "max_child_devices",
+    "supports_device_types"
   ]
 };
 
@@ -108,24 +133,8 @@ const loadTableState = (): TableState => {
   }
 }
 
-// Save state to session storage
-const saveTableState = (state: TableState) => {
-  if (typeof window === "undefined") return
-
-  try {
-    // Convert Sets to arrays for JSON serialization
-    const serializedState = {
-      ...state,
-      filters: Object.fromEntries(Object.entries(state.filters).map(([key, values]) => [key, Array.from(values)])),
-    }
-    sessionStorage.setItem("tableState", JSON.stringify(serializedState))
-  } catch (error) {
-    console.error("Error saving table state:", error)
-  }
-}
-
 // Get all columns for a device type
-const getAllColumns = (deviceType: 'light' | 'lock'): ColumnConfig[] => {
+const getAllColumns = (deviceType: ActiveDeviceType): ColumnConfig[] => {
   
   const deviceColumns = DEVICE_COLUMNS[deviceType];
   
@@ -166,8 +175,8 @@ export function DeviceGrid({ devices }: DeviceGridProps) {
   
   // Get initial state from URL or defaults
   const [searchTerm, setSearchTerm] = useState('')
-  const [activeType, setActiveType] = useState<'light' | 'lock'>(
-    (searchParams.get('type') as 'light' | 'lock') || 'light'
+  const [activeType, setActiveType] = useState<ActiveDeviceType>(
+    (searchParams.get('type') as ActiveDeviceType) || 'light'
   )
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: "", direction: "asc" })
   const [filters, setFilters] = useState<Filters>({})
@@ -189,14 +198,14 @@ export function DeviceGrid({ devices }: DeviceGridProps) {
   }
 
   // Update URL when activeType changes
-  const updateUrlParams = (type: 'light' | 'lock') => {
+  const updateUrlParams = (type: ActiveDeviceType) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set('type', type)
     router.push(`?${params.toString()}`, { scroll: false })
   }
 
   // Handle tab change
-  const handleTypeChange = (newType: 'light' | 'lock') => {
+  const handleTypeChange = (newType: ActiveDeviceType) => {
     setActiveType(newType)
     updateUrlParams(newType)
   }
@@ -304,6 +313,8 @@ export function DeviceGrid({ devices }: DeviceGridProps) {
           <TabsList>
             <TabsTrigger value="light">Lights</TabsTrigger>
             <TabsTrigger value="lock">Locks</TabsTrigger>
+            <TabsTrigger value="sensor">Sensors</TabsTrigger>
+            <TabsTrigger value="controller">Controllers</TabsTrigger>
           </TabsList>
         </Tabs>
         <div className="flex items-center gap-2 md:gap-4">

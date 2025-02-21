@@ -5,11 +5,12 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import Markdown from "react-markdown"
-import type { Device } from "@/lib/types/device"
-import { isLightDevice, isLockDevice } from "@/lib/utils/type-guards"
+import type { Device } from "@/lib/schema/device"
+import { isLightDevice, isLockDevice, isSensorDevice, isControllerDevice } from "@/lib/utils/type-guards"
 import { LightDeviceDetails } from "./light-device-details"
 import { LockDeviceDetails } from "./lock-device-details"
-import { useSearchParams } from 'next/navigation'
+import { SensorDeviceDetails } from "./sensor-device-details"
+import { ControllerDeviceDetails } from "./controller-device-details"
 
 interface DeviceDetailsProps {
   device: Device
@@ -38,7 +39,7 @@ function GeneralInfo({ device }: DeviceDetailsProps) {
 function ProductInfo({ device }: DeviceDetailsProps) {
   return (
     <dl className="device-details">
-      {device.product_info.name && (
+      {device.product_info?.name && (
         <div>
           <dt className="font-medium">Name</dt>
           <dd className="text-muted-foreground">{device.product_info.name}</dd>
@@ -47,43 +48,43 @@ function ProductInfo({ device }: DeviceDetailsProps) {
       <div>
         <dt className="font-medium">Production Status</dt>
         <dd>
-          {device.product_info.in_production ? (
+          {device.product_info?.in_production ? (
             <Badge variant="secondary">In Production</Badge>
           ) : (
             <Badge variant="destructive">Discontinued</Badge>
           )}
         </dd>
       </div>
-      {device.product_info.sku && (
+      {device.product_info?.sku && (
         <div>
           <dt className="font-medium">SKU</dt>
           <dd className="text-muted-foreground">{device.product_info.sku}</dd>
         </div>
       )}
-      {device.product_info.ean_or_upc && (
+      {device.product_info?.ean_or_upc && (
         <div>
           <dt className="font-medium">EAN/UPC</dt>
-          <dd className="text-muted-foreground">{device.product_info.ean_or_upc}</dd>
+          <dd className="text-muted-foreground">{device.product_info?.ean_or_upc}</dd>
         </div>
       )}
-      {device.product_info.msrp_ea && (
+      {device.product_info?.msrp_ea && (
         <div>
           <dt className="font-medium">MSRP</dt>
-          <dd className="text-muted-foreground">${device.product_info.msrp_ea.toFixed(2)}</dd>
+          <dd className="text-muted-foreground">${device.product_info?.msrp_ea.toFixed(2)}</dd>
         </div>
       )}
-      {device.product_info.price_last_checked && (
+      {device.product_info?.price_last_checked && (
         <div>
           <dt className="font-medium">Price Last Checked</dt>
-          <dd className="text-muted-foreground">{new Date(device.product_info.price_last_checked).toLocaleDateString()}</dd>
+          <dd className="text-muted-foreground">{new Date(device.product_info?.price_last_checked).toLocaleDateString()}</dd>
         </div>
       )}
-      {device.product_info.official_product_page_url && (
+      {device.product_info?.official_product_page_url && (
         <div>
           <dt className="font-medium">Product Page</dt>
           <dd>
             <Button variant="link" asChild className="h-auto p-0">
-              <Link href={device.product_info.official_product_page_url} target="_blank">
+              <Link href={device.product_info?.official_product_page_url} target="_blank">
                 Visit manufacturer website
                 <ExternalLink className="ml-2 h-4 w-4" />
               </Link>
@@ -91,12 +92,12 @@ function ProductInfo({ device }: DeviceDetailsProps) {
           </dd>
         </div>
       )}
-      {device.product_info.spec_sheet_url && (
+      {device.product_info?.spec_sheet_url && (
         <div>
           <dt className="font-medium">Specification Sheet</dt>
           <dd>
             <Button variant="link" asChild className="h-auto p-0">
-              <Link href={device.product_info.spec_sheet_url} target="_blank">
+              <Link href={device.product_info?.spec_sheet_url} target="_blank">
                 Download PDF
                 <ExternalLink className="ml-2 h-4 w-4" />
               </Link>
@@ -232,6 +233,10 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
             <LightDeviceDetails device={device} />
           ) : isLockDevice(device) ? (
             <LockDeviceDetails device={device} />
+          ) : isSensorDevice(device) ? (
+            <SensorDeviceDetails device={device} />
+          ) : isControllerDevice(device) ? (
+            <ControllerDeviceDetails device={device} />
           ) : (
             <div>Unknown device type: {deviceType}</div>
           )}

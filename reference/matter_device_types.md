@@ -5,13 +5,17 @@ last_updated_by: "@mocha"
 
 # Matter device ids and types
 
-In general, we're grouping all device types together by their top-level group (according to how it's structured in the [Matter 1.4 Device Library-Specification)(https://csa-iot.org/wp-content/uploads/2024/11/24-27351-005_Matter-1.4-Device-Library-Specification.pdf)]. If there are enough devices in a category to be broken out later, we can do so then.
+In general, we're grouping all device types together by their top-level group (for devices: according to how it's structured in the [Matter 1.4 Device Library-Specification](https://csa-iot.org/wp-content/uploads/2024/11/24-27351-005_Matter-1.4-Device-Library-Specification.pdf). 
 
-All of these folders have been prepopulated in the `/devices` directory.
+(Note: If there are enough devices in a category to be broken out later, we can do so then.)
+
+---
+
+---
 
 ## Lighting
 - Stored in the `/devices/lighting` directory
-- Referenced as `lighting` in device frontmatter
+- Referenced as `light` in device frontmatter's `general_info` section
 
 | device_id | device_name |
 | ---       | ---         |
@@ -23,6 +27,9 @@ All of these folders have been prepopulated in the `/devices` directory.
 ---
 
 ## Smart plugs/outlets and other actuators
+- Stored in the `/devices/smart-plugs` directory
+- Referenced as `smart_plug` in device frontmatter's `general_info` section
+
 | device_id | device_name |
 | ---       | ---         |
 | 0x010A    | On/Off Plug-in Unit |
@@ -31,6 +38,8 @@ All of these folders have been prepopulated in the `/devices` directory.
 | 0x0110    | Mounted Dimmable Load Control |
 | 0x0303    | Pump |
 | 0x0042    | Water Valve |
+
+---
 
 ## Switches and controls
 | device_id | device_name |
@@ -42,7 +51,12 @@ All of these folders have been prepopulated in the `/devices` directory.
 | 0x0304    | Pump Controller |
 | 0x000F    | Generic Switch | 
 
+---
+
 ## Sensors
+- Stored in the `/devices/sensors` directory
+- Referenced as `sensor` in device frontmatter's `general_info` section
+
 | device_id | device_name |
 | ---       | ---         |
 | 0x0015    | Contact Sensor |
@@ -59,6 +73,8 @@ All of these folders have been prepopulated in the `/devices` directory.
 | 0x0043    | Water Leak Detector |
 | 0x0044    | Rain Sensor |
 
+--
+
 ## Closures
 | device_id | device_name |
 | ---       | ---         |
@@ -74,6 +90,8 @@ All of these folders have been prepopulated in the `/devices` directory.
 | 0x002B    | Fan |
 | 0x002D    | Air Purifier |
 
+---
+
 ## Media
 | device_id | device_name |
 | ---       | ---         |
@@ -84,16 +102,22 @@ All of these folders have been prepopulated in the `/devices` directory.
 | 0x0029    | Casting Video Client |
 | 0x002A    | Video Remote Control |
 
+---
+
 ## Generic
 | device_id | device_name |
 | ---       | ---         |
 | 0x0027    | Mode Select |
 | 0x000E    | Aggregator |
 
+---
+
 ## Robotic devices
 | device_id | device_name |
 | ---       | ---         |
 | 0x0074    | Robotic Vacuum Cleaner |
+
+--
 
 ## Appliances
 | device_id | device_name |
@@ -106,6 +130,8 @@ All of these folders have been prepopulated in the `/devices` directory.
 | 0x0077    | Cook Surface |
 | 0x0078    | Cooktop | 
 
+---
+
 ## Energy
 | device_id | device_name |
 | ---       | ---         |
@@ -113,6 +139,8 @@ All of these folders have been prepopulated in the `/devices` directory.
 | 0x007A    | Extractor Hood |
 | 0x007B    | Oven |
 | 0x007C    | Laundry Dryer |
+
+---
 
 ## Energy
 | device_id | device_name |
@@ -123,12 +151,13 @@ All of these folders have been prepopulated in the `/devices` directory.
 | 0x0018    | Battery Storage |
 | 0x0309    | Heat Pump |
 
+---
+
 ## Network infrastructure
 | device_id | device_name |
 | ---       | ---         |
 | 0x0090    | Network Infrastructure Manager |
 | 0x0091    | Thread Border Router |
-
 
 ---
 

@@ -23,7 +23,7 @@ function withMetadata<T extends z.ZodType>(
 export const GeneralInfoSchema = z.object({
   make: withMetadata(z.string(), { label: "Make", group: "General", sortable: true, filterable: true }),
   model: withMetadata(z.string(), { label: "Model", group: "General", sortable: true, filterable: true }),
-  type: withMetadata(z.enum(['light', 'lock']), { label: "Type", group: "General" })
+  type: withMetadata(z.enum(['light', 'lock', 'sensor', 'controller']), { label: "Type", group: "General" })
 });
 
 export const ProductInfoSchema = z.object({
@@ -111,10 +111,72 @@ export const LockDeviceInfoSchema = z.object({
   battery_type: z.string().optional()
 });
 
+export const SensorDeviceInfoSchema = z.object({
+  sensors_contact: withMetadata(
+    z.boolean().nullable().optional(),
+    { label: "Contact Sensor", group: "Device Features", sortable: true, filterable: true, renderBadge: true }
+  ),
+  sensors_temperature: withMetadata(
+    z.boolean().nullable().optional(),
+    { label: "Temperature Sensor", group: "Device Features", sortable: true, filterable: true, renderBadge: true }
+  ),
+  sensors_humidity: withMetadata(
+    z.boolean().nullable().optional(),
+    { label: "Humidity Sensor", group: "Device Features", sortable: true, filterable: true, renderBadge: true }
+  ),
+  sensors_illuminance: withMetadata(
+    z.boolean().nullable().optional(),
+    { label: "Illuminance Sensor", group: "Device Features", sortable: true, filterable: true, renderBadge: true }
+  ),
+  sensors_air_quality: withMetadata(
+    z.boolean().nullable().optional(),
+    { label: "Air Quality Sensor", group: "Device Features", sortable: true, filterable: true, renderBadge: true }
+  ),
+  sensors_sound: withMetadata(
+    z.boolean().nullable().optional(),
+    { label: "Sound Sensor", group: "Device Features", sortable: true, filterable: true, renderBadge: true }
+  ),
+  sensors_air_pressure: withMetadata(
+    z.boolean().nullable().optional(),
+    { label: "Air Pressure Sensor", group: "Device Features", sortable: true, filterable: true, renderBadge: true }
+  ),
+  battery: withMetadata(
+    z.boolean().nullable().optional(),
+    { label: "Battery Powered", group: "Device Features", sortable: true, filterable: true, renderBadge: true }
+  ),
+  battery_type: withMetadata(
+    z.string().nullable().optional(),
+    { label: "Battery Type", group: "Device Features", sortable: true, filterable: true }
+  )
+}).partial();
+
+export const ControllerDeviceInfoSchema = z.object({
+  hub_type: withMetadata(
+    z.enum(['bridge', 'gateway', 'coordinator']).nullable(),
+    { label: "Hub Type", group: "Device Features", sortable: true, filterable: true }
+  ),
+  max_child_devices: withMetadata(
+    z.number().nullable(),
+    { label: "Max Child Devices", group: "Device Features", sortable: true }
+  ),
+  ethernet_port: withMetadata(
+    z.boolean().nullable(),
+    { label: "Ethernet Port", group: "Device Features", sortable: true, filterable: true, renderBadge: true }
+  ),
+  ir_controller: withMetadata(
+    z.boolean().nullable(),
+    { label: "IR Controller", group: "Device Features", sortable: true, filterable: true, renderBadge: true }
+  ),
+  supports_device_types: withMetadata(
+    z.array(z.string()).nullable(),
+    { label: "Supported Devices", group: "Device Features", sortable: true, filterable: true }
+  )
+}).partial();
+
 // Base device schema without device_info
 const BaseDeviceWithoutInfo = z.object({
   id: z.string(),
-  type: z.enum(['light', 'lock']),
+  type: z.enum(['light', 'lock', 'sensor', 'controller']),
   general_info: GeneralInfoSchema.omit({ type: true }), // Only make and model required
   product_info: ProductInfoSchema.nullable(),
   connectivity_info: ConnectivityInfoSchema.nullable(),
@@ -135,10 +197,24 @@ export const LightDeviceSchema = BaseDeviceWithoutInfo.extend({
   device_info: LightDeviceInfoSchema.nullable()
 });
 
+// Add Sensor device schema (after LockDeviceSchema)
+export const SensorDeviceSchema = BaseDeviceWithoutInfo.extend({
+  type: z.literal('sensor'),
+  device_info: SensorDeviceInfoSchema.nullable()
+});
+
+// Add Controller device schema (after SensorDeviceSchema)
+export const ControllerDeviceSchema = BaseDeviceWithoutInfo.extend({
+  type: z.literal('controller'),
+  device_info: ControllerDeviceInfoSchema.nullable()
+});
+
 // Union of all device types
 export const DeviceSchema = z.discriminatedUnion('type', [
   LightDeviceSchema,
-  LockDeviceSchema
+  LockDeviceSchema,
+  SensorDeviceSchema,
+  ControllerDeviceSchema
 ]);
 
 // Export TypeScript types
@@ -147,9 +223,13 @@ export type ProductInfo = z.infer<typeof ProductInfoSchema>;
 export type ConnectivityInfo = z.infer<typeof ConnectivityInfoSchema>;
 export type LightDeviceInfo = z.infer<typeof LightDeviceInfoSchema>;
 export type LockDeviceInfo = z.infer<typeof LockDeviceInfoSchema>;
+export type SensorDeviceInfo = z.infer<typeof SensorDeviceInfoSchema>;
+export type ControllerDeviceInfo = z.infer<typeof ControllerDeviceInfoSchema>;
 export type BaseDevice = z.infer<typeof BaseDeviceWithoutInfo>;
 export type LightDevice = z.infer<typeof LightDeviceSchema>;
 export type LockDevice = z.infer<typeof LockDeviceSchema>;
+export type SensorDevice = z.infer<typeof SensorDeviceSchema>;
+export type ControllerDevice = z.infer<typeof ControllerDeviceSchema>;
 export type Device = z.infer<typeof DeviceSchema>;
 
 // Add the helper function

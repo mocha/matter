@@ -44,6 +44,40 @@
     }
   },
   {
+    "id": "arre-contact-sensor",
+    "type": "sensor",
+    "general_info": {
+      "make": "Arre",
+      "model": "Arre Contact Sensor"
+    },
+    "product_info": {
+      "name": "Standard",
+      "in_production": true,
+      "sku": "",
+      "ean_or_upc": "198715231533",
+      "official_product_page_url": "https://arrehome.com/pages/contact-sensor",
+      "page_last_checked": "2025-02-21",
+      "msrp_ea": 29.99,
+      "price_last_checked": "2025-02-21"
+    },
+    "connectivity_info": {
+      "matter_certified": true,
+      "includes_direct_matter_code": true,
+      "app_required_for_full_functionality": false,
+      "works_with_homekit": true,
+      "works_with_matter": true,
+      "works_with_thread": true
+    },
+    "notes_content": "\n## Other Links\n\n- [MatterAlpha](https://www.matteralpha.com/news/arre-launches-revamped-matter-over-thread-contact-sensor)",
+    "path": "devices/sensors/arre/arre-contact-sensor.md",
+    "gh_file_url": "https://github.com/mocha/matter/blob/main/devices/sensors/arre/arre-contact-sensor.md?plain=1",
+    "device_info": {
+      "sensors_contact": true,
+      "battery": true,
+      "battery_type": "CR2032"
+    }
+  },
+  {
     "id": "u100-smart-deadbolt",
     "type": "lock",
     "general_info": {
@@ -76,6 +110,51 @@
       "unlock_with_proprietary": false,
       "battery": true,
       "battery_type": "4x AA"
+    }
+  },
+  {
+    "id": "moes-matter-smart-gu10-led",
+    "type": "light",
+    "general_info": {
+      "make": "MOES",
+      "model": "Matter Smart GU10 LED Light Bulbs"
+    },
+    "product_info": {
+      "name": "Standard",
+      "in_production": true,
+      "sku": "WB-TD5-RWW-GU10-220-MS",
+      "official_product_page_url": "https://moeshouse.com/products/moes-wifi-gu10-smart-light-bulbs-led-rgb-warm-dimmable-lamps-5w-alexa-google-app",
+      "page_last_checked": "2025-02-14",
+      "spec_sheet_url": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/moes-wifi-gu10-smart-light-bulbs-led-rgb-warm-dimmable-lamps-5w-alexa-google-app.pdf?v=1712623800",
+      "msrp_ea": 12.99,
+      "price_last_checked": "2025-02-14"
+    },
+    "connectivity_info": {
+      "matter_certified": true,
+      "includes_direct_matter_code": true,
+      "app_required_for_full_functionality": false,
+      "works_with_homekit": true,
+      "works_with_alexa": true,
+      "works_with_google_assistant": true,
+      "works_with_matter": true,
+      "works_with_wifi": true
+    },
+    "notes_content": "",
+    "path": "devices/lighting/moes/moes-matter-smart-gu10-led.md",
+    "gh_file_url": "https://github.com/mocha/matter/blob/main/devices/lighting/moes/moes-matter-smart-gu10-led.md?plain=1",
+    "device_info": {
+      "socket": "GU10",
+      "bulb_shape": "GU10",
+      "style": "Track light",
+      "led_category": "RGB",
+      "housing_material": "White plastic",
+      "bulb_lens_material": "Frosted plastic",
+      "brightness_lm": 400,
+      "rated_power_w": 5,
+      "eqiv_power_w": 50,
+      "beam_angle_deg": 120,
+      "white_color_temp_range_k_start": 2200,
+      "white_color_temp_range_k_end": 6500
     }
   },
   {
@@ -208,51 +287,6 @@
       "eqiv_power_w": 60,
       "beam_angle_deg": 200,
       "color_rendering_index_cri": 80,
-      "white_color_temp_range_k_start": 2200,
-      "white_color_temp_range_k_end": 6500
-    }
-  },
-  {
-    "id": "moes-matter-smart-gu10-led",
-    "type": "light",
-    "general_info": {
-      "make": "MOES",
-      "model": "Matter Smart GU10 LED Light Bulbs"
-    },
-    "product_info": {
-      "name": "Standard",
-      "in_production": true,
-      "sku": "WB-TD5-RWW-GU10-220-MS",
-      "official_product_page_url": "https://moeshouse.com/products/moes-wifi-gu10-smart-light-bulbs-led-rgb-warm-dimmable-lamps-5w-alexa-google-app",
-      "page_last_checked": "2025-02-14",
-      "spec_sheet_url": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/moes-wifi-gu10-smart-light-bulbs-led-rgb-warm-dimmable-lamps-5w-alexa-google-app.pdf?v=1712623800",
-      "msrp_ea": 12.99,
-      "price_last_checked": "2025-02-14"
-    },
-    "connectivity_info": {
-      "matter_certified": true,
-      "includes_direct_matter_code": true,
-      "app_required_for_full_functionality": false,
-      "works_with_homekit": true,
-      "works_with_alexa": true,
-      "works_with_google_assistant": true,
-      "works_with_matter": true,
-      "works_with_wifi": true
-    },
-    "notes_content": "",
-    "path": "devices/lighting/moes/moes-matter-smart-gu10-led.md",
-    "gh_file_url": "https://github.com/mocha/matter/blob/main/devices/lighting/moes/moes-matter-smart-gu10-led.md?plain=1",
-    "device_info": {
-      "socket": "GU10",
-      "bulb_shape": "GU10",
-      "style": "Track light",
-      "led_category": "RGB",
-      "housing_material": "White plastic",
-      "bulb_lens_material": "Frosted plastic",
-      "brightness_lm": 400,
-      "rated_power_w": 5,
-      "eqiv_power_w": 50,
-      "beam_angle_deg": 120,
       "white_color_temp_range_k_start": 2200,
       "white_color_temp_range_k_end": 6500
     }
@@ -584,6 +618,55 @@
       "eqiv_power_w": 75,
       "white_color_temp_range_k_start": 2000,
       "white_color_temp_range_k_end": 7000
+    }
+  },
+  {
+    "id": "aqara-hub-m3",
+    "type": "controller",
+    "general_info": {
+      "make": "Aqara",
+      "model": "Aqara Hub M3"
+    },
+    "product_info": {
+      "name": "Standard",
+      "in_production": true,
+      "sku": "LS47001-CCT-US-4",
+      "official_product_page_url": "https://www.linkind.com/linkind-st64-matter-enabled-smart-edison-bulbs.html",
+      "page_last_checked": "2025-02-14",
+      "msrp_ea": 6.49,
+      "price_last_checked": "2025-02-14"
+    },
+    "connectivity_info": {
+      "matter_certified": true,
+      "includes_direct_matter_code": true,
+      "works_with_homekit": true,
+      "works_with_alexa": true,
+      "works_with_google_assistant": true,
+      "works_with_matter": true,
+      "works_with_zigbee": true,
+      "works_with_zwave": true,
+      "works_with_thread": true,
+      "works_with_bluetooth": true,
+      "works_with_wifi": true
+    },
+    "notes_content": "",
+    "path": "devices/controllers/aqara/aqara-hub-m3.md",
+    "gh_file_url": "https://github.com/mocha/matter/blob/main/devices/controllers/aqara/aqara-hub-m3.md?plain=1",
+    "device_info": {
+      "hub_type": "bridge",
+      "max_child_devices": 127,
+      "ethernet_port": true,
+      "ir_controller": true,
+      "supports_device_types": [
+        "contact sensors",
+        "occupancy sensors",
+        "light sensor",
+        "lights",
+        "on/off, dimmer switches",
+        "thermostats",
+        "on/off plug / outlet",
+        "matter bridges"
+      ]
     }
   }
 ]
